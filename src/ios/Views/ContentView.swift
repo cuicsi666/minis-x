@@ -1014,6 +1014,7 @@ private enum SessionMenuAction {
     case togglePin(String)
     case exportJSON(String)
     case exportText(String)
+    case exportMarkdown(String)
     case editTitle(String)
     case regenerateTitle(String)
     case lockSession(String)
@@ -1487,6 +1488,28 @@ struct ContentView: View {
     // Edit session
     @State private var sessionToEdit: ChatSession?
 
+    // [Minis_X entry integration] Sheet state for the four ready feature
+    // modules: favorites (star), session search (magnifyingglass), per-session
+    // Markdown export (context menu), and the theme-colour settings page.
+    @State private var showFavorites = false
+    @State private var showSessionSearch = false
+    /// Snapshot handed to `SessionSearchView`. Built on demand (see
+    /// `presentSessionSearch()`), never derived in `body` — `ChatStore` is an
+    /// actor, so the message projection is async and must not run per render.
+    @State private var searchableSessions: [SearchableSession] = []
+    /// Re-entrancy guard for the (potentially multi-query) index build.
+    @State private var isProjectingSearch = false
+    /// Session picked from the context menu's "Export Markdown" item; the
+    /// sheet loads its messages lazily (see `SessionMarkdownExportSheet`).
+    @State private var markdownExportSession: ChatSession?
+    /// How many of the MOST RECENT sessions get their message bodies loaded
+    /// into the search index. Titles are always projected for every session
+    /// (they are already in `sessions`); bodies are bounded because
+    /// `ChatStore.loadMessages` is one SQLite query + JSON decode per session,
+    /// so indexing ~2000 sessions would take seconds and a lot of memory for a
+    /// single button tap.
+    private static let sessionSearchBodyLimit = 100
+
     // [T-ios-crash-contextmenu-uaf] Stable action relay for session context menus.
     @State private var menuActions = SessionMenuActionChannel()
 
@@ -1909,6 +1932,26 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showExportPreview) {
             ExportPreviewSheet(fileURL: exportFileURL, previewURL: exportPreviewURL, summary: exportSummary)
+        }
+        // [Minis_X entry integration] Favorites list → open the starred
+        // message's session. The dismiss flag is cleared BEFORE `openSession`
+        // so the push happens against the already-dismissed sheet (same
+        // ordering the delete/folder sheets use).
+        .sheet(isPresented: $showFavorites) {
+            FavoritesListView { sessionId, _ in
+                showFavorites = false
+                openSession(sessionId)
+            }
+        }
+        .sheet(isPresented: $showSessionSearch) {
+            SessionSearchView(sessions: searchableSessions) { sessionId in
+                showSessionSearch = false
+                openSession(sessionId)
+            }
+        }
+        // Per-session Markdown export, triggered from the context menu.
+        .sheet(item: $markdownExportSession) { session in
+            SessionMarkdownExportSheet(sessionId: session.id, title: session.title)
         }
         .sheet(item: $folderPickerRequest, onDismiss: {
             // Mirror the delete sheet's pattern (see the comment near
@@ -3933,6 +3976,25 @@ struct ContentView: View {
         ToolbarItem(placement: .topBarTrailing) {
             if !isSelecting {
                 Menu {
+                    // [Minis_X entry integration] Favorites + session search
+                    // entries. Kept inside this Menu rather than as two extra
+                    // trailing toolbar buttons: the sidebar bar already carries
+                    // gear + alarm + this menu + a full-width `.principal`
+                    // title, and a 340pt iPad sidebar column cannot take more
+                    // chrome without re-introducing
+                    // [T-ios-ipad-sidebar-title-offcentre]. Chinese labels
+                    // mirror the two destination sheets' own titles.
+                    Button {
+                        showFavorites = true
+                    } label: {
+                        Label("收藏", systemImage: "star")
+                    }
+                    Button {
+                        Task { @MainActor in await presentSessionSearch() }
+                    } label: {
+                        Label("搜索会话", systemImage: "magnifyingglass")
+                    }
+                    Divider()
                     Button {
                         showTerminal = true
                     } label: {
@@ -4252,6 +4314,49 @@ struct ContentView: View {
         }
     }
 
+    // MARK: - Session Search Projection
+
+    /// Builds the `[SearchableSession]` snapshot and presents the search sheet.
+    ///
+    /// `SessionSearchView` takes a synchronous, already-projected array, but
+    /// `ChatStore` is an actor, so the projection is async. Titles come straight
+    /// from the in-memory `sessions` list (already loaded, no DB hit); message
+    /// bodies are read via `ChatStore.loadMessages` for the most recent
+    /// `sessionSearchBodyLimit` sessions only — see the constant's doc comment.
+    /// User/assistant text parts are joined verbatim; a message left with no
+    /// visible text (tool-only turns) is dropped so the index never carries
+    /// empty rows.
+    @MainActor
+    private func presentSessionSearch() async {
+        guard !isProjectingSearch else { return }
+        isProjectingSearch = true
+        defer { isProjectingSearch = false }
+
+        let snapshot = sessions  // [ChatSession], `updated_at DESC` (most recent first)
+        var projected: [SearchableSession] = []
+        projected.reserveCapacity(snapshot.count)
+
+        for (index, session) in snapshot.enumerated() {
+            var bodies: [String] = []
+            if index < Self.sessionSearchBodyLimit {
+                let raw = await ChatStore.shared.loadMessages(sessionId: session.id)
+                bodies = raw.compactMap { message in
+                    let text = message.parts.compactMap { part -> String? in
+                        if case .text(let value) = part { return value }
+                        return nil
+                    }.joined(separator: "\n")
+                    return text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : text
+                }
+            }
+            projected.append(SearchableSession(id: session.id,
+                                               title: session.title,
+                                               messages: bodies))
+        }
+
+        searchableSessions = projected
+        showSessionSearch = true
+    }
+
     // MARK: - Session Context Menu
 
     /// Cached, language-aware "Lock with <biometry>" menu label.
@@ -4328,6 +4433,13 @@ struct ContentView: View {
                 exportSessions(ids: [sid], format: .json)
             case .exportText(let sid):
                 exportSessions(ids: [sid], format: .plainText)
+            case .exportMarkdown(let sid):
+                // [Minis_X entry integration] Present the module's Markdown
+                // export sheet for this one session. Messages are loaded inside
+                // the sheet (ChatStore is an actor).
+                if let current = sessions.first(where: { $0.id == sid }) {
+                    markdownExportSession = current
+                }
             case .editTitle(let sid):
                 if let current = sessions.first(where: { $0.id == sid }) {
                     sessionToEdit = current
@@ -6392,6 +6504,50 @@ private struct DeleteConfirmSheet: View {
     }
 }
 
+// MARK: - Session Markdown Export Sheet
+
+/// Loads one session's messages and hands them to the module's
+/// `ExportShareSheet`. `ChatStore` is an actor, so the read is async and the
+/// sheet cannot be constructed from a synchronous call site; this tiny wrapper
+/// owns that load and shows a spinner until the messages arrive.
+///
+/// Lives here (not in the module) because it is pure entry-point glue: the
+/// export feature's own contract takes a pre-built `[ExportedMessage]`.
+@MainActor
+private struct SessionMarkdownExportSheet: View {
+    let sessionId: String
+    let title: String?
+
+    @State private var messages: [ExportedMessage]?
+
+    var body: some View {
+        Group {
+            if let messages {
+                ExportShareSheet(title: title, messages: messages)
+            } else {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+        .task { await load() }
+    }
+
+    private func load() async {
+        let raw = await ChatStore.shared.loadMessages(sessionId: sessionId)
+        messages = raw.map { message in
+            let text = message.parts.compactMap { part -> String? in
+                if case .text(let value) = part { return value }
+                return nil
+            }.joined(separator: "\n")
+            // `ExportedMessage.role` is a raw String ("user" / "assistant") so
+            // no project enum has to be translated at this boundary.
+            return ExportedMessage(role: message.role.rawValue,
+                                   text: text,
+                                   date: message.createdAt)
+        }
+    }
+}
+
 // MARK: - Export Preview Sheet
 
 private struct ExportPreviewSheet: View {
@@ -6759,6 +6915,11 @@ private struct SessionContextMenu: View, Equatable {
                 actions.send(.exportText(key.sid))
             } label: {
                 Label("Plain Text", systemImage: "text.alignleft")
+            }
+            Button {
+                actions.send(.exportMarkdown(key.sid))
+            } label: {
+                Label("Markdown", systemImage: "chevron.left.forwardslash.chevron.right")
             }
         } label: {
             Label("Export", systemImage: "square.and.arrow.up")
@@ -8146,6 +8307,24 @@ private struct SettingsSheet: View {
                             Text("Appearance")
                         } icon: {
                             Image(systemName: "paintbrush.fill")
+                                .font(.system(size: 9))
+                                .foregroundStyle(.white)
+                                .frame(width: 21, height: 21)
+                                .background(.indigo, in: Circle())
+                        }
+                    }
+                    // [Minis_X entry integration] Theme-colour page. Styled to
+                    // match the Appearance row directly above (white glyph on
+                    // the same 21pt indigo disc, literal `Text` label — this
+                    // section uses LocalizedStringKey literals, not
+                    // `AppLocalized`, so this row follows the same convention).
+                    NavigationLink {
+                        ThemeColorSettingsView()
+                    } label: {
+                        Label {
+                            Text("主题配色")
+                        } icon: {
+                            Image(systemName: "paintpalette.fill")
                                 .font(.system(size: 9))
                                 .foregroundStyle(.white)
                                 .frame(width: 21, height: 21)
