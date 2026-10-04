@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2FC4EB9492CD44578096B527 /* CallModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17A9739FD068CB33363C986C /* CallModeView.swift */; };
+		FE914A5574B24815A6E813A7 /* CallModeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFA543D62A81FBDCCDA123 /* CallModeController.swift */; };
 		C7AA3A8969BA631EB3FB2175 /* ThemeColorSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2D8504D13EFC4D87798A57 /* ThemeColorSettingsView.swift */; };
 		9A962580A91AA67665C4E3D3 /* SessionSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884632B8F7D5DBC013BDA1F3 /* SessionSearchView.swift */; };
 		E9EBB13ED30F514B0BD2FE97 /* QuickPromptPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E07110199E933E700B20CE93 /* QuickPromptPanel.swift */; };
@@ -652,6 +654,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		17A9739FD068CB33363C986C /* CallModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/CallModeView.swift"; sourceTree = "<group>"; };
+		C0FFA543D62A81FBDCCDA123 /* CallModeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallModeController.swift"; sourceTree = "<group>"; };
 		5F2D8504D13EFC4D87798A57 /* ThemeColorSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Settings/ThemeColorSettingsView.swift"; sourceTree = "<group>"; };
 		884632B8F7D5DBC013BDA1F3 /* SessionSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/SessionSearchView.swift"; sourceTree = "<group>"; };
 		E07110199E933E700B20CE93 /* QuickPromptPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/QuickPromptPanel.swift"; sourceTree = "<group>"; };
@@ -1844,6 +1848,7 @@
 		E5D000030 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				17A9739FD068CB33363C986C /* CallModeView.swift */,
 				5F2D8504D13EFC4D87798A57 /* ThemeColorSettingsView.swift */,
 				884632B8F7D5DBC013BDA1F3 /* SessionSearchView.swift */,
 				E07110199E933E700B20CE93 /* QuickPromptPanel.swift */,
@@ -1880,6 +1885,7 @@
 		E5E000031 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				C0FFA543D62A81FBDCCDA123 /* CallModeController.swift */,
 				0B8F9942265C321CD1C51144 /* SessionSearchService.swift */,
 				FED5A5B5A26109A7200B16C2 /* QuotedReplyStore.swift */,
 				FE41E04904007D7641F40943 /* QuickPromptStore.swift */,
@@ -2834,6 +2840,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2FC4EB9492CD44578096B527 /* CallModeView.swift in Sources */,
+				FE914A5574B24815A6E813A7 /* CallModeController.swift in Sources */,
 				C7AA3A8969BA631EB3FB2175 /* ThemeColorSettingsView.swift in Sources */,
 				9A962580A91AA67665C4E3D3 /* SessionSearchView.swift in Sources */,
 				E9EBB13ED30F514B0BD2FE97 /* QuickPromptPanel.swift in Sources */,

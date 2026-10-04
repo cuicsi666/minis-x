@@ -343,6 +343,8 @@ struct AIChatView: View {
     @State private var showAttachmentMenu = false
     /// [Minis_X #5] 快捷提示词面板
     @State private var showQuickPrompts = false
+    /// [Minis_X] 通话模式全屏
+    @State private var showCallMode = false
     @State private var isDropTargeted = false
     @State private var showCamera = false
     @State private var showPhotoPicker = false
@@ -929,6 +931,9 @@ struct AIChatView: View {
         .environment(\.openImageGallery, OpenImageGalleryAction { presentation in
             imageGallery = presentation
         })
+        .fullScreenCover(isPresented: $showCallMode) {
+            CallModeView(controller: CallModeController.shared)
+        }
         .fullScreenCover(item: $previewImageFile) { fileURL in
             MinisImageFilePreviewView(fileURL: fileURL)
         }
@@ -1628,6 +1633,12 @@ struct AIChatView: View {
             if vm.userDidCancel { return .stopped }
             if vm.errorMessage != nil { return .failed }
             return .finished
+        }
+        .onChange(of: vm.isProcessing) { processing in
+            // [Minis_X 通话模式] AI 回复完成 -> 自动播报
+            if !processing, CallModeController.shared.state == .thinking {
+                CallModeController.shared.notifyAssistantReply(AIChatView.latestAssistantText(in: vm))
+            }
         }
         .onChange(of: vm.isProcessing) { processing in
             if !processing {
@@ -3344,6 +3355,7 @@ struct AIChatView: View {
                 readAloudToolbarToggle
                 Spacer()
             }
+            callModeButton
             micButtonContainer
             sendButton
         }
@@ -3549,6 +3561,35 @@ struct AIChatView: View {
     }
 
     /// Mic button plus the attached language-picker sheet.
+    /// [Minis_X] 通话模式入口：进入全屏语音通话（连续对话 + 自动播报）。
+    private var callModeButton: some View {
+        Button {
+            let controller = CallModeController.shared
+            controller.onSendText = { text in
+                vm.send(overrideText: text)
+            }
+            controller.isAIBusy = { vm.isProcessing }
+            controller.latestAssistantReply = { AIChatView.latestAssistantText(in: vm) }
+            controller.start()
+            showCallMode = true
+        } label: {
+            Image(systemName: "phone.fill")
+                .font(.system(size: 16, weight: .medium))
+                .foregroundStyle(ChatColors.secondaryText)
+                .frame(width: 34, height: 34)
+                .background(ChatColors.inputIconBg)
+                .clipShape(Circle())
+                .overlay(Circle().stroke(ChatColors.inputIconBorder, lineWidth: 0.5))
+                .accessibilityLabel(Text("\u{901a}\u{8bdd}\u{6a21}\u{5f0f}"))
+        }
+    }
+
+    /// 取最近一条 assistant 回复的可见正文（通话模式播报用）。
+    static func latestAssistantText(in vm: AIChatViewModel) -> String {
+        guard let msg = vm.messages.last(where: { $0.role == .assistant }) else { return "" }
+        return ChatFavoritesStore.captureText(of: msg)
+    }
+
     private var micButtonContainer: some View {
         MicButton(speechManager: speechManager, inputFocused: $inputFocused, onTap: {
             if voiceInputActive {
@@ -3900,6 +3941,11 @@ struct AIChatView: View {
 
                 inputFieldOrWaveform
 
+                // [Minis_X] 输出 Token 显示（输入框内部，紧贴文本框下方，右对齐）
+                LiveTokenFooter(vm: vm)
+                    .padding(.trailing, 6)
+                    .padding(.top, 1)
+
                 inputBottomRow
                     // [T-ios-de-voice-toolbar] Measure the row so the
                     // read-aloud toggle can decide whether its label fits.
@@ -3919,8 +3965,6 @@ struct AIChatView: View {
                     .padding(.horizontal, 12)
                     .padding(.bottom, 10)
 
-                // [Minis_X #7] 实时 Token 用量条
-                LiveTokenFooter(vm: vm)
             }
             .contentShape(RoundedRectangle(cornerRadius: 20))
             .onTapGesture { inputFocused = true }
