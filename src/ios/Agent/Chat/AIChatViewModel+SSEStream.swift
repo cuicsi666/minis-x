@@ -627,6 +627,7 @@ extension AIChatViewModel {
                                 cacheAttributedString: false,
                                 requestScroll: true
                             )
+                            self.noteLiveOutputSnapshot(snapshot)   // [Minis_X #7]
                         }
                     }
                 }

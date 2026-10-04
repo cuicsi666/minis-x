@@ -1273,6 +1273,38 @@ final class AIChatViewModel: ObservableObject, SpeechControlling {
     /// Cumulative output tokens across all API calls in this session.
     var sessionOutputTokens: Int = 0
 
+    // MARK: - [Minis_X #7] 实时 Token 用量
+
+    /// 流式回复的启发式 token 估算值（随 flush 节奏更新）。
+    @Published private(set) var liveOutputTokens: Int = 0
+    /// 流式回复的滑动窗口速率（token/秒）。
+    @Published private(set) var liveTokenRate: Double = 0
+    /// 当前迭代里已计入的字符数（快照游标）。
+    private var liveSnapshotCharCount: Int = 0
+    private let liveTokenEstimator = TokenUsageEstimator()
+    private var liveTokenTracker = TokenRateTracker(window: 5)
+
+    /// 喂入一份流式快照；只统计新增部分，快照变小则仅对齐游标。
+    func noteLiveOutputSnapshot(_ snapshot: String) {
+        let count = snapshot.count
+        defer { liveSnapshotCharCount = count }
+        guard count > liveSnapshotCharCount else { return }
+        let delta = String(snapshot.suffix(count - liveSnapshotCharCount))
+        let tokens = liveTokenEstimator.estimate(delta)
+        guard tokens > 0 else { return }
+        liveOutputTokens += tokens
+        liveTokenTracker.record(tokens: tokens)
+        liveTokenRate = liveTokenTracker.currentRate()
+    }
+
+    /// 回合开始时重置（在 send 顶部调用一次）。
+    func resetLiveTokenTelemetry() {
+        liveTokenTracker.reset()
+        liveSnapshotCharCount = 0
+        liveOutputTokens = sessionOutputTokens
+        liveTokenRate = 0
+    }
+
     /// Session-level token totals.
     var sessionTokenStats: (input: Int, output: Int, cacheRead: Int, cacheWrite: Int, context: Int, loopCount: Int) {
         var context = 0
@@ -2825,6 +2857,7 @@ final class AIChatViewModel: ObservableObject, SpeechControlling {
     ///   the text here keeps a background turn from reading, overwriting, or
     ///   emptying whatever the user is typing at that moment.
     func send(overrideText: String? = nil) {
+        resetLiveTokenTelemetry()
         // Read-only mode — cannot send messages
         guard remoteDeviceId == nil else { return }
         // Every `inputText = ""` below is guarded by this: the composer is

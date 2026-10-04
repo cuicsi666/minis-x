@@ -341,6 +341,8 @@ struct AIChatView: View {
     @State private var showTerminal = false
     @State private var terminalInitCommand: String?
     @State private var showAttachmentMenu = false
+    /// [Minis_X #5] 快捷提示词面板
+    @State private var showQuickPrompts = false
     @State private var isDropTargeted = false
     @State private var showCamera = false
     @State private var showPhotoPicker = false
@@ -1064,6 +1066,17 @@ struct AIChatView: View {
                 }
             }
             .presentationDetents([.large])
+        }
+        .sheet(isPresented: $showQuickPrompts) {
+            QuickPromptPanel { prompt in
+                if vm.inputText.isEmpty {
+                    vm.inputText = prompt.body
+                } else {
+                    vm.inputText += "\n" + prompt.body
+                }
+            }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showTokenUsage) {
             TokenUsageSheet(vm: cached.vm)
@@ -3321,6 +3334,7 @@ struct AIChatView: View {
         let row = HStack(spacing: 12) {
             attachmentMenuButton
             slashMenuButton
+            quickPromptButton
             if vm.editingMessageIndex != nil { editExitButton }
             Spacer()
             // Mutually exclusive with editExitButton: while editing a past
@@ -3340,7 +3354,7 @@ struct AIChatView: View {
     /// leading buttons, the 34pt mic and the 34pt send button, plus the four
     /// 12pt HStack gaps between them. Everything left over is what the
     /// read-aloud capsule may use.
-    private static let readAloudRowFixedWidth: CGFloat = 34 * 4 + 12 * 4
+    private static let readAloudRowFixedWidth: CGFloat = 34 * 5 + 12 * 5
 
     /// Free width below which the toggle drops its text and becomes icon-only.
     ///
@@ -3462,6 +3476,24 @@ struct AIChatView: View {
                : AppLocalized("Off", comment: "VoiceOver value for the read-replies toggle when disabled")
         ))
         .accessibilityHint(Text("Toggles reading replies aloud", comment: "VoiceOver hint for the read-replies toggle"))
+    }
+
+
+    /// [Minis_X #5] 快捷提示词：打开面板，点选后插入输入框。
+    private var quickPromptButton: some View {
+        Button {
+            if vm.showSlashMenu { vm.dismissSlashMenu() }
+            showQuickPrompts = true
+        } label: {
+            Image(systemName: "text.badge.plus")
+                .font(.system(size: 17, weight: .medium))
+                .foregroundStyle(ChatColors.secondaryText)
+                .frame(width: 34, height: 34)
+                .background(ChatColors.inputIconBg)
+                .clipShape(Circle())
+                .overlay(Circle().stroke(ChatColors.inputIconBorder, lineWidth: 0.5))
+                .accessibilityLabel(Text("\u{5feb}\u{6377}\u{63d0}\u{793a}\u{8bcd}"))
+        }
     }
 
     /// `/` button that opens the slash command menu.
@@ -3886,6 +3918,9 @@ struct AIChatView: View {
                     // constant subtracted back out of it.
                     .padding(.horizontal, 12)
                     .padding(.bottom, 10)
+
+                // [Minis_X #7] 实时 Token 用量条
+                LiveTokenFooter(vm: vm)
             }
             .contentShape(RoundedRectangle(cornerRadius: 20))
             .onTapGesture { inputFocused = true }
@@ -7005,4 +7040,29 @@ final class ComposerActionChannel {
     /// an early arrow/tab key keeps its default text-view behaviour).
     @discardableResult
     func send(_ action: Action) -> Bool { handler?(action) ?? false }
+}
+
+
+// MARK: - [Minis_X #7] 实时 Token 用量页脚
+
+/// 输入栏下方的实时用量条：包装纯视图 `LiveTokenBar`，把 VM 的流式遥测接进来。
+struct LiveTokenFooter: View {
+    @ObservedObject var vm: AIChatViewModel
+
+    var body: some View {
+        let ctx = vm.contextUsage
+        let output = vm.isProcessing ? vm.liveOutputTokens : vm.sessionOutputTokens
+
+        if !(ctx == nil && output <= 0 && vm.liveTokenRate <= 0) {
+            LiveTokenBar(
+                inputTokens: ctx?.usedTokens ?? 0,
+                outputTokens: output,
+                rate: vm.isProcessing ? vm.liveTokenRate : 0,
+                contextFraction: ctx?.fraction
+            )
+            .padding(.horizontal, 12)
+            .padding(.bottom, 6)
+            .transition(.opacity)
+        }
+    }
 }
