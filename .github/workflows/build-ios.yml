@@ -40,6 +40,9 @@ jobs:
         run: |
           xcrun -sdk iphoneos metal --version || echo "no-metal-compiler(yadif_videotoolbox may drop)"
 
+      - name: Ensure exec bits
+        run: chmod +x deps/*.sh scripts/*.sh 2>/dev/null || true
+
       - name: Build native deps (lame -> ffmpeg -> ish -> rootfs -> rclone)
         run: |
           # Homebrew LLVM carries lld; the VDSO step of iSH needs
