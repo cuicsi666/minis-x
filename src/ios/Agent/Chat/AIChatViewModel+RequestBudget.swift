@@ -269,20 +269,33 @@ extension AIChatViewModel {
     /// FileProvider extension. Keep ONLY user-facing subdirs (shared, skills,
     /// memory) here — anything else leaks into "On My iPhone → Minis".
     nonisolated static var minisAppGroupRoot: URL {
-        FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: SharedContainerStore.appGroupID
-        )!.appendingPathComponent("MinisFileProvider", isDirectory: true)
+        minisSharedContainerBase.appendingPathComponent("MinisFileProvider", isDirectory: true)
     }
 
     /// App Group subdirectory for private metadata that must NOT be exposed
     /// to iOS Files (mounted-folders.json, FileProvider extension logs, etc).
     /// Sibling of `minisAppGroupRoot` inside the same App Group container.
     nonisolated static var minisConfigRoot: URL {
-        let url = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: SharedContainerStore.appGroupID
-        )!.appendingPathComponent("MinisConfig", isDirectory: true)
+        let url = minisSharedContainerBase.appendingPathComponent("MinisConfig", isDirectory: true)
         try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         return url
+    }
+
+    /// [Minis_X 侧载修复] App Group 容器根路径。
+    ///
+    /// 侧载签名（AltStore / 全能签）不会为 App 配置 App Group，此时
+    /// `containerURL(forSecurityApplicationGroupIdentifier:)` 返回 nil。
+    /// 原实现对该返回值**强解**（`!`），侧载环境一启动就崩。这里回退到沙箱自身的
+    /// Application Support：功能完整，仅 FileProvider 跨进程共享目录退化为 App
+    /// 私有目录（侧载下 FileProvider 扩展本就不可用）。
+    nonisolated static var minisSharedContainerBase: URL {
+        if let container = FileManager.default.containerURL(
+            forSecurityApplicationGroupIdentifier: SharedContainerStore.appGroupID
+        ) {
+            return container
+        }
+        return FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
     }
 
     /// Persistent storage directory for memory (shared across all sessions).
