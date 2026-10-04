@@ -83,8 +83,7 @@ jobs:
             cp src/ios/Configs/ProviderCustomization.xcconfig.example \
                src/ios/Configs/ProviderCustomization.xcconfig
           fi
-          set -o pipefail
-          set -x
+          set +e
           xcodebuild \
             -project src/ios/Minis.xcodeproj \
             -scheme Minis \
@@ -93,9 +92,20 @@ jobs:
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            build 2>&1 | tee /tmp/xcbuild.log | tail -80
-          set +x
-          test -d build/Build/Products/Release-iphoneos || { echo "NO .app produced"; tail -150 /tmp/xcbuild.log; exit 1; }
+            build > /tmp/xcbuild.log 2>&1
+          status=$?
+          set -e
+          echo "xcodebuild exit=$status"
+          if [ $status -ne 0 ]; then
+            echo "==================== ERRORS ===================="
+            grep -n "error:" /tmp/xcbuild.log | head -100 || true
+            echo "==================== END ERRORS ==============="
+            echo "==================== TAIL ====================="
+            tail -40 /tmp/xcbuild.log
+          else
+            tail -12 /tmp/xcbuild.log
+          fi
+          test -d build/Build/Products/Release-iphoneos || { echo "NO .app produced"; exit 1; }
 
       - name: Package IPA
         run: |
@@ -109,6 +119,14 @@ jobs:
           zip -qry ../Minis_X.ipa Payload
           cd ..
           ls -lh Minis_X.ipa
+
+      - name: Upload gradle-style build log (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcodebuild-log
+          path: /tmp/xcbuild.log
+          if-no-files-found: warn
 
       - uses: actions/upload-artifact@v4
         with:
