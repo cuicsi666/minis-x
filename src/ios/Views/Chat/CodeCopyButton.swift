@@ -1,5 +1,5 @@
 //
-//  CodeBlockCopyButton.swift
+//  CodeCopyButton.swift
 //  MinisApp
 //
 //  Minis_X feature — 代码块复制按钮 (one-tap "copy code" affordance).
@@ -7,7 +7,7 @@
 //  Two small, self-contained SwiftUI pieces, no dependency on the chat model or
 //  the markdown pipeline:
 //
-//    • `CodeBlockCopyButton` — the icon-only button itself. Tap copies `code`
+//    • `CodeCopyButton` — the icon-only button itself. Tap copies `code`
 //      to `UIPasteboard.general.string`, flips its glyph to a checkmark for
 //      1.5s, then back. No text label (icon-first; nothing to localize).
 //
@@ -38,8 +38,8 @@ import UIKit
 
 /// Icon-only clipboard button: `doc.on.doc` → `checkmark` for 1.5s → back.
 ///
-///     CodeBlockCopyButton(code: "print(\"hi\")")
-struct CodeBlockCopyButton: View {
+///     CodeCopyButton(code: "print(\"hi\")")
+struct CodeCopyButton: View {
 
     /// The exact text placed on the pasteboard on tap.
     private let code: String
@@ -88,7 +88,7 @@ struct CodeBlockCopyButton: View {
 
 // MARK: - Container
 
-/// Rounded card that wraps arbitrary content, pins a `CodeBlockCopyButton` to
+/// Rounded card that wraps arbitrary content, pins a `CodeCopyButton` to
 /// the top-right corner, and shows an optional language tag top-left.
 ///
 ///     CodeBlockContainer(code: source, language: "swift") {
@@ -146,7 +146,7 @@ struct CodeBlockContainer<Content: View>: View {
                 }
             }
             .overlay(alignment: .topTrailing) {
-                CodeBlockCopyButton(code: code)
+                CodeCopyButton(code: code)
                     .padding(.trailing, 6)
                     .padding(.top, 5)
             }

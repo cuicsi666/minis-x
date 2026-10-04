@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EA196525FF6ED3C231E94D9F /* CodeCopyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563F805D7BF162A16548CA97 /* CodeCopyButton.swift */; };
 		92FE7BA3D2F3130DE3C69FC2 /* ReadingPreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D0444ED60519361470B2AB /* ReadingPreferenceView.swift */; };
 		FAF6E228F03F2B426B30AE25 /* PinnedMessagesBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F7C41B60262442A995E49D /* PinnedMessagesBar.swift */; };
-		06953649A959AEF513277D09 /* CodeBlockCopyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C2035C06694D6B089CE98D /* CodeBlockCopyButton.swift */; };
 		06259D91FE038848FE7155BF /* ReadingPreferenceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6E6624C93D11D50821B56D /* ReadingPreferenceStore.swift */; };
 		6E340062277E5BC6F1B208FA /* PinnedMessagesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35876F55410D7AB463CBA199 /* PinnedMessagesStore.swift */; };
 		5E4810FFA6F219E543B26BA2 /* DaySeparatorBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0E65E06F654D244D1AE238A /* DaySeparatorBuilder.swift */; };
@@ -661,9 +661,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		563F805D7BF162A16548CA97 /* CodeCopyButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/CodeCopyButton.swift"; sourceTree = "<group>"; };
 		18D0444ED60519361470B2AB /* ReadingPreferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Settings/ReadingPreferenceView.swift"; sourceTree = "<group>"; };
 		18F7C41B60262442A995E49D /* PinnedMessagesBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/PinnedMessagesBar.swift"; sourceTree = "<group>"; };
-		29C2035C06694D6B089CE98D /* CodeBlockCopyButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/CodeBlockCopyButton.swift"; sourceTree = "<group>"; };
 		4D6E6624C93D11D50821B56D /* ReadingPreferenceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReadingPreferenceStore.swift"; sourceTree = "<group>"; };
 		35876F55410D7AB463CBA199 /* PinnedMessagesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PinnedMessagesStore.swift"; sourceTree = "<group>"; };
 		B0E65E06F654D244D1AE238A /* DaySeparatorBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DaySeparatorBuilder.swift"; sourceTree = "<group>"; };
@@ -1862,9 +1862,9 @@
 		E5D000030 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				563F805D7BF162A16548CA97 /* CodeCopyButton.swift */,
 				18D0444ED60519361470B2AB /* ReadingPreferenceView.swift */,
 				18F7C41B60262442A995E49D /* PinnedMessagesBar.swift */,
-				29C2035C06694D6B089CE98D /* CodeBlockCopyButton.swift */,
 				17A9739FD068CB33363C986C /* CallModeView.swift */,
 				5F2D8504D13EFC4D87798A57 /* ThemeColorSettingsView.swift */,
 				884632B8F7D5DBC013BDA1F3 /* SessionSearchView.swift */,
@@ -2861,9 +2861,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EA196525FF6ED3C231E94D9F /* CodeCopyButton.swift in Sources */,
 				92FE7BA3D2F3130DE3C69FC2 /* ReadingPreferenceView.swift in Sources */,
 				FAF6E228F03F2B426B30AE25 /* PinnedMessagesBar.swift in Sources */,
-				06953649A959AEF513277D09 /* CodeBlockCopyButton.swift in Sources */,
 				06259D91FE038848FE7155BF /* ReadingPreferenceStore.swift in Sources */,
 				6E340062277E5BC6F1B208FA /* PinnedMessagesStore.swift in Sources */,
 				5E4810FFA6F219E543B26BA2 /* DaySeparatorBuilder.swift in Sources */,

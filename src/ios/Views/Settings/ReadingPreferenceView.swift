@@ -52,12 +52,8 @@ struct ReadingPreferenceView: View {
                     value: $store.fontScale,
                     in: ReadingPreferenceStore.fontScaleRange,
                     step: 0.01,
-                    minimumValueLabel: {
-                        Image(systemName: "textformat.size.smaller")
-                    },
-                    maximumValueLabel: {
-                        Image(systemName: "textformat.size.larger")
-                    },
+                    minimumValueLabel: Image(systemName: "textformat.size.smaller"),
+                    maximumValueLabel: Image(systemName: "textformat.size.larger"),
                     label: {
                         Text("字号缩放")
                     }
@@ -87,16 +83,8 @@ struct ReadingPreferenceView: View {
                     value: $store.lineSpacing,
                     in: ReadingPreferenceStore.lineSpacingRange,
                     step: 0.01,
-                    minimumValueLabel: {
-                        Image(systemName: "text.alignleft")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    },
-                    maximumValueLabel: {
-                        Image(systemName: "text.alignleft")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    },
+                    minimumValueLabel: Image(systemName: "text.alignleft") .font(.caption2) .foregroundStyle(.secondary),
+                    maximumValueLabel: Image(systemName: "text.alignleft") .font(.caption) .foregroundStyle(.secondary),
                     label: {
                         Text("行距")
                     }
