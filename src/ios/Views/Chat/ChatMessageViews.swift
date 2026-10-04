@@ -251,6 +251,30 @@ struct MessageExtraMenuItems: View {
         } label: {
             Label(AppLocalized("Quote Reply"), systemImage: "quote.bubble")
         }
+
+        // [Minis_X] 翻译：交由会话宿主弹出译文面板（通知桥接，避免菜单内套 sheet）
+        Button {
+            NotificationCenter.default.post(
+                name: .minisXTranslateRequest,
+                object: nil,
+                userInfo: ["id": message.id.uuidString, "text": text]
+            )
+        } label: {
+            Label("翻译", systemImage: "character.book.closed")
+        }
+        .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
+        // [Minis_X] 分享为长图
+        Button {
+            NotificationCenter.default.post(
+                name: .minisXShareImageRequest,
+                object: nil,
+                userInfo: ["text": text, "title": sessionId ?? ""]
+            )
+        } label: {
+            Label("分享长图", systemImage: "photo.on.rectangle")
+        }
+        .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
     }
 }
 

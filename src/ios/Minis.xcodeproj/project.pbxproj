@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C9CB4EC53FAE23F7B4648972 /* PersonaPresetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9294230F36186F7C4173B00B /* PersonaPresetView.swift */; };
+		1FF3EB5BEE61BC3E8570249A /* TranslationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8671945C0D9C94DBC4BE3038 /* TranslationSheet.swift */; };
+		C9B0C5B5DDB01A7CD2A3019E /* UsageTrendChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3684514359E25FEC0EAA474 /* UsageTrendChart.swift */; };
+		E11058914B06A25EC5E6A12F /* UsageTrendStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB3655135D99E0B61D67E114 /* UsageTrendStore.swift */; };
+		3D24BC4D2D25E87ACAB2ACFE /* MessageTranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE95656178CAF24BC8FFA91 /* MessageTranslationService.swift */; };
+		74A74846965184388123E598 /* MessageImageExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E2EEE6579769D62EB420E9 /* MessageImageExporter.swift */; };
+		5CCF20EA363ED1D76044B271 /* PersonaPresetStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6908C33D3B1688227613BA9A /* PersonaPresetStore.swift */; };
 		EA196525FF6ED3C231E94D9F /* CodeCopyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563F805D7BF162A16548CA97 /* CodeCopyButton.swift */; };
 		92FE7BA3D2F3130DE3C69FC2 /* ReadingPreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D0444ED60519361470B2AB /* ReadingPreferenceView.swift */; };
 		FAF6E228F03F2B426B30AE25 /* PinnedMessagesBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F7C41B60262442A995E49D /* PinnedMessagesBar.swift */; };
@@ -661,6 +668,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9294230F36186F7C4173B00B /* PersonaPresetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Settings/PersonaPresetView.swift"; sourceTree = "<group>"; };
+		8671945C0D9C94DBC4BE3038 /* TranslationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/TranslationSheet.swift"; sourceTree = "<group>"; };
+		E3684514359E25FEC0EAA474 /* UsageTrendChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/UsageTrendChart.swift"; sourceTree = "<group>"; };
+		FB3655135D99E0B61D67E114 /* UsageTrendStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UsageTrendStore.swift"; sourceTree = "<group>"; };
+		DDE95656178CAF24BC8FFA91 /* MessageTranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageTranslationService.swift"; sourceTree = "<group>"; };
+		68E2EEE6579769D62EB420E9 /* MessageImageExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageImageExporter.swift"; sourceTree = "<group>"; };
+		6908C33D3B1688227613BA9A /* PersonaPresetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersonaPresetStore.swift"; sourceTree = "<group>"; };
 		563F805D7BF162A16548CA97 /* CodeCopyButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/CodeCopyButton.swift"; sourceTree = "<group>"; };
 		18D0444ED60519361470B2AB /* ReadingPreferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Settings/ReadingPreferenceView.swift"; sourceTree = "<group>"; };
 		18F7C41B60262442A995E49D /* PinnedMessagesBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/PinnedMessagesBar.swift"; sourceTree = "<group>"; };
@@ -1862,6 +1876,9 @@
 		E5D000030 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				9294230F36186F7C4173B00B /* PersonaPresetView.swift */,
+				8671945C0D9C94DBC4BE3038 /* TranslationSheet.swift */,
+				E3684514359E25FEC0EAA474 /* UsageTrendChart.swift */,
 				563F805D7BF162A16548CA97 /* CodeCopyButton.swift */,
 				18D0444ED60519361470B2AB /* ReadingPreferenceView.swift */,
 				18F7C41B60262442A995E49D /* PinnedMessagesBar.swift */,
@@ -1902,6 +1919,10 @@
 		E5E000031 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				FB3655135D99E0B61D67E114 /* UsageTrendStore.swift */,
+				DDE95656178CAF24BC8FFA91 /* MessageTranslationService.swift */,
+				68E2EEE6579769D62EB420E9 /* MessageImageExporter.swift */,
+				6908C33D3B1688227613BA9A /* PersonaPresetStore.swift */,
 				4D6E6624C93D11D50821B56D /* ReadingPreferenceStore.swift */,
 				35876F55410D7AB463CBA199 /* PinnedMessagesStore.swift */,
 				B0E65E06F654D244D1AE238A /* DaySeparatorBuilder.swift */,
@@ -2861,6 +2882,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9CB4EC53FAE23F7B4648972 /* PersonaPresetView.swift in Sources */,
+				1FF3EB5BEE61BC3E8570249A /* TranslationSheet.swift in Sources */,
+				C9B0C5B5DDB01A7CD2A3019E /* UsageTrendChart.swift in Sources */,
+				E11058914B06A25EC5E6A12F /* UsageTrendStore.swift in Sources */,
+				3D24BC4D2D25E87ACAB2ACFE /* MessageTranslationService.swift in Sources */,
+				74A74846965184388123E598 /* MessageImageExporter.swift in Sources */,
+				5CCF20EA363ED1D76044B271 /* PersonaPresetStore.swift in Sources */,
 				EA196525FF6ED3C231E94D9F /* CodeCopyButton.swift in Sources */,
 				92FE7BA3D2F3130DE3C69FC2 /* ReadingPreferenceView.swift in Sources */,
 				FAF6E228F03F2B426B30AE25 /* PinnedMessagesBar.swift in Sources */,

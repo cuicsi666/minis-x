@@ -345,6 +345,12 @@ struct AIChatView: View {
     @State private var showQuickPrompts = false
     /// [Minis_X] 通话模式全屏
     @State private var showCallMode = false
+    /// [Minis_X] 翻译面板
+    @State private var translationTarget: (id: String, text: String)?
+    /// [Minis_X] 长图分享
+    @State private var shareImageItems: [Any]?
+    /// [Minis_X] 翻译器（用当前会话模型，一次性调用）
+    private static var translatorWired = false
     @State private var isDropTargeted = false
     @State private var showCamera = false
     @State private var showPhotoPicker = false
@@ -937,6 +943,45 @@ struct AIChatView: View {
         .environment(\.openImageGallery, OpenImageGalleryAction { presentation in
             imageGallery = presentation
         })
+        .onReceive(NotificationCenter.default.publisher(for: .minisXTranslateRequest)) { note in
+            guard let info = note.userInfo,
+                  let id = info["id"] as? String,
+                  let txt = info["text"] as? String else { return }
+            MessageTranslationService.shared.translator = { src in
+                let prompt = "把下面的内容翻译成地道、流畅的简体中文，保留原有格式与专有名词，只输出译文，不要解释：\n\n" + src
+                guard let entry = vm.resolveCurrentEntry(),
+                      let provider = try? await AIChatViewModel.makeLLMProvider(for: entry) else {
+                    throw NSError(domain: "translate", code: 1)
+                }
+                let resp = try await provider.sendMessage(
+                    messages: [LLMMessage(role: .user, content: prompt)],
+                    systemPrompt: nil,
+                    maxTokens: 2000,
+                    temperature: 0.2
+                )
+                return resp.text
+            }
+            translationTarget = (id: id, text: txt)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .minisXShareImageRequest)) { note in
+            guard let info = note.userInfo,
+                  let txt = info["text"] as? String else { return }
+            if let img = MessageImageExporter.renderCard(text: txt) {
+                shareImageItems = [img]
+            }
+        }
+        .sheet(isPresented: Binding(get: { translationTarget != nil },
+                                    set: { if !$0 { translationTarget = nil } })) {
+            if let t = translationTarget {
+                TranslationSheet(messageId: t.id, text: t.text)
+            }
+        }
+        .sheet(isPresented: Binding(get: { shareImageItems != nil },
+                                    set: { if !$0 { shareImageItems = nil } })) {
+            if let items = shareImageItems {
+                ExportShareSheet.ShareSheet(activityItems: items)
+            }
+        }
         .fullScreenCover(isPresented: $showCallMode) {
             CallModeView(controller: CallModeController.shared)
         }
@@ -1653,6 +1698,11 @@ struct AIChatView: View {
                         messageId: last.id.uuidString,
                         text: ChatFavoritesStore.captureText(of: last)
                     )
+                }
+                // [Minis_X] 用量趋势记录
+                if let last2 = vm.messages.last, let u = last2.usage {
+                    UsageTrendStore.shared.record(inputTokens: u.inputTokens,
+                                                  outputTokens: u.outputTokens)
                 }
             }
         }
@@ -6752,6 +6802,13 @@ private struct TokenUsageSheet: View {
                     if totalInput > 0 && s.cacheRead > 0 {
                         let hitRate = Double(s.cacheRead) / Double(totalInput) * 100
                         StatRow(label: "Cache Hit Rate", value: String(format: "%.1f%%", hitRate), icon: "percent")
+                    }
+                }
+
+                if !UsageTrendStore.shared.samples.isEmpty {
+                    Section("Trend") {
+                        UsageTrendChart(samples: UsageTrendStore.shared.samples)
+                            .padding(.vertical, 4)
                     }
                 }
 

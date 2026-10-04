@@ -8331,6 +8331,20 @@ private struct SettingsSheet: View {
                                 .background(.indigo, in: Circle())
                         }
                     }
+                    // [Minis_X] AI 人设预设
+                    NavigationLink {
+                        PersonaPresetView()
+                    } label: {
+                        Label {
+                            Text("AI 人设预设")
+                        } icon: {
+                            Image(systemName: "person.2.badge.gearshape.fill")
+                                .font(.system(size: 9))
+                                .foregroundStyle(.white)
+                                .frame(width: 21, height: 21)
+                                .background(.indigo, in: Circle())
+                        }
+                    }
                     // [Minis_X] 字体大小与行距
                     NavigationLink {
                         ReadingPreferenceView()
