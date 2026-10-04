@@ -22,7 +22,8 @@ enum MessageImageExporter {
         return text.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    /// 渲染一张 540pt 宽（@2x）的分享卡片图。
+    /// 渲染一张 540pt 宽（@2x）的分享卡片图。ImageRenderer 是 MainActor 隔离的。
+    @MainActor
     static func renderCard(text: String, title: String? = nil, isDark: Bool = false) -> UIImage? {
         let body = cleanMarkdown(text)
         guard !body.isEmpty else { return nil }
