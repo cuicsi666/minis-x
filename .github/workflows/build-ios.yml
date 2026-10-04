@@ -95,16 +95,15 @@ jobs:
             build > /tmp/xcbuild.log 2>&1
           status=$?
           set -e
-          echo "xcodebuild exit=$status"
-          if [ $status -ne 0 ]; then
-            echo "==================== ERRORS ===================="
-            grep -n "error:" /tmp/xcbuild.log | head -100 || true
-            echo "==================== END ERRORS ==============="
-            echo "==================== TAIL ====================="
-            tail -40 /tmp/xcbuild.log
-          else
-            tail -12 /tmp/xcbuild.log
+          if [ "$status" -ne 0 ]; then
+            echo "==================== COMPILE ERRORS ===================="
+            grep -n "error:" /tmp/xcbuild.log | head -120 || true
+            echo "==================== END ERRORS ========================"
+            echo "xcodebuild FAILED with exit code $status"
+            exit 1
           fi
+          echo "xcodebuild succeeded"
+          tail -12 /tmp/xcbuild.log
           test -d build/Build/Products/Release-iphoneos || { echo "NO .app produced"; exit 1; }
 
       - name: Verify & package IPA

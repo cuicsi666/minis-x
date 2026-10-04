@@ -95,7 +95,7 @@ struct SessionSearchView: View {
             try? await Task.sleep(for: .milliseconds(250))
             isSearchFieldFocused = true
         }
-        .onChange(of: query) { _, newValue in
+        .onChange(of: query) { newValue in
             scheduleSearch(for: newValue)
         }
         .onDisappear {
