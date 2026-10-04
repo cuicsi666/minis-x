@@ -8331,6 +8331,20 @@ private struct SettingsSheet: View {
                                 .background(.indigo, in: Circle())
                         }
                     }
+                    // [Minis_X] 字体大小与行距
+                    NavigationLink {
+                        ReadingPreferenceView()
+                    } label: {
+                        Label {
+                            Text("字体与行距")
+                        } icon: {
+                            Image(systemName: "textformat.size")
+                                .font(.system(size: 9))
+                                .foregroundStyle(.white)
+                                .frame(width: 21, height: 21)
+                                .background(.indigo, in: Circle())
+                        }
+                    }
                 }
 
                 Section("Agent Runtime") {

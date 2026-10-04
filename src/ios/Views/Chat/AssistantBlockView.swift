@@ -138,6 +138,18 @@ struct AssistantBlockView: View {
                     Label(AppLocalized("Copy Error"), systemImage: "doc.on.doc")
                 }
                 Divider()
+                // [Minis_X] 固定 / 取消固定到会话顶部
+                Button {
+                    PinnedMessagesStore.shared.toggle(
+                        messageId: message.id.uuidString,
+                        sessionId: sessionId ?? "",
+                        text: ChatFavoritesStore.captureText(of: message)
+                    )
+                } label: {
+                    Label(PinnedMessagesStore.shared.isPinned(messageId: message.id.uuidString)
+                          ? "取消固定" : "固定到顶部",
+                          systemImage: "pin")
+                }
                 // [T-msg-tts-fav-quote] 块级长按也能拿到整条消息的朗读 / 收藏 /
                 // 引用（正文走 ChatFavoritesStore.captureText —— 与收藏 store 同一
                 // 份"正文口径"，streaming 中 content 为空时回落 text blocks）。

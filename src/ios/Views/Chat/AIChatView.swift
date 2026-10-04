@@ -518,6 +518,12 @@ struct AIChatView: View {
             // Messages — floating tool preview overlaid at bottom
             messagesArea
                 .safeAreaInset(edge: .top, spacing: 0) {
+                    // [Minis_X] 固定到会话顶部的消息条
+                    PinnedMessagesBar(sessionId: vm.sessionId ?? "",
+                                      onSelect: { _ in },
+                                      onUnpin: { mid in
+                                          PinnedMessagesStore.shared.unpin(messageId: mid)
+                                      })
                     // Error banner
                     if let error = vm.errorMessage {
                         errorBanner(error)
@@ -1635,9 +1641,19 @@ struct AIChatView: View {
             return .finished
         }
         .onChange(of: vm.isProcessing) { processing in
-            // [Minis_X 通话模式] AI 回复完成 -> 自动播报
-            if !processing, CallModeController.shared.state == .thinking {
-                CallModeController.shared.notifyAssistantReply(AIChatView.latestAssistantText(in: vm))
+            if !processing {
+                // [Minis_X 通话模式] AI 回复完成 -> 自动播报
+                if CallModeController.shared.state == .thinking {
+                    CallModeController.shared.notifyAssistantReply(AIChatView.latestAssistantText(in: vm))
+                }
+                // [Minis_X] 自动播报开关：回复完成 -> 自动朗读（防重复）
+                if AutoSpeakController.shared.isEnabled,
+                   let last = vm.messages.last, last.role == .assistant {
+                    AutoSpeakController.shared.handleAssistantReplyFinished(
+                        messageId: last.id.uuidString,
+                        text: ChatFavoritesStore.captureText(of: last)
+                    )
+                }
             }
         }
         .onChange(of: vm.isProcessing) { processing in
