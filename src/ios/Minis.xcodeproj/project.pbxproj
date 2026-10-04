@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		92FE7BA3D2F3130DE3C69FC2 /* ReadingPreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D0444ED60519361470B2AB /* ReadingPreferenceView.swift */; };
+		FAF6E228F03F2B426B30AE25 /* PinnedMessagesBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F7C41B60262442A995E49D /* PinnedMessagesBar.swift */; };
+		06953649A959AEF513277D09 /* CodeBlockCopyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C2035C06694D6B089CE98D /* CodeBlockCopyButton.swift */; };
+		06259D91FE038848FE7155BF /* ReadingPreferenceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6E6624C93D11D50821B56D /* ReadingPreferenceStore.swift */; };
+		6E340062277E5BC6F1B208FA /* PinnedMessagesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35876F55410D7AB463CBA199 /* PinnedMessagesStore.swift */; };
+		5E4810FFA6F219E543B26BA2 /* DaySeparatorBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0E65E06F654D244D1AE238A /* DaySeparatorBuilder.swift */; };
+		22E818FBDFBE5521738C4A17 /* AutoSpeakController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB352EBE4254563C4AD4775 /* AutoSpeakController.swift */; };
 		2FC4EB9492CD44578096B527 /* CallModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17A9739FD068CB33363C986C /* CallModeView.swift */; };
 		FE914A5574B24815A6E813A7 /* CallModeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFA543D62A81FBDCCDA123 /* CallModeController.swift */; };
 		C7AA3A8969BA631EB3FB2175 /* ThemeColorSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2D8504D13EFC4D87798A57 /* ThemeColorSettingsView.swift */; };
@@ -654,6 +661,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		18D0444ED60519361470B2AB /* ReadingPreferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Settings/ReadingPreferenceView.swift"; sourceTree = "<group>"; };
+		18F7C41B60262442A995E49D /* PinnedMessagesBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/PinnedMessagesBar.swift"; sourceTree = "<group>"; };
+		29C2035C06694D6B089CE98D /* CodeBlockCopyButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/CodeBlockCopyButton.swift"; sourceTree = "<group>"; };
+		4D6E6624C93D11D50821B56D /* ReadingPreferenceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReadingPreferenceStore.swift"; sourceTree = "<group>"; };
+		35876F55410D7AB463CBA199 /* PinnedMessagesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PinnedMessagesStore.swift"; sourceTree = "<group>"; };
+		B0E65E06F654D244D1AE238A /* DaySeparatorBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DaySeparatorBuilder.swift"; sourceTree = "<group>"; };
+		9AB352EBE4254563C4AD4775 /* AutoSpeakController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AutoSpeakController.swift"; sourceTree = "<group>"; };
 		17A9739FD068CB33363C986C /* CallModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/CallModeView.swift"; sourceTree = "<group>"; };
 		C0FFA543D62A81FBDCCDA123 /* CallModeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallModeController.swift"; sourceTree = "<group>"; };
 		5F2D8504D13EFC4D87798A57 /* ThemeColorSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Settings/ThemeColorSettingsView.swift"; sourceTree = "<group>"; };
@@ -1848,6 +1862,9 @@
 		E5D000030 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				18D0444ED60519361470B2AB /* ReadingPreferenceView.swift */,
+				18F7C41B60262442A995E49D /* PinnedMessagesBar.swift */,
+				29C2035C06694D6B089CE98D /* CodeBlockCopyButton.swift */,
 				17A9739FD068CB33363C986C /* CallModeView.swift */,
 				5F2D8504D13EFC4D87798A57 /* ThemeColorSettingsView.swift */,
 				884632B8F7D5DBC013BDA1F3 /* SessionSearchView.swift */,
@@ -1885,6 +1902,10 @@
 		E5E000031 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				4D6E6624C93D11D50821B56D /* ReadingPreferenceStore.swift */,
+				35876F55410D7AB463CBA199 /* PinnedMessagesStore.swift */,
+				B0E65E06F654D244D1AE238A /* DaySeparatorBuilder.swift */,
+				9AB352EBE4254563C4AD4775 /* AutoSpeakController.swift */,
 				C0FFA543D62A81FBDCCDA123 /* CallModeController.swift */,
 				0B8F9942265C321CD1C51144 /* SessionSearchService.swift */,
 				FED5A5B5A26109A7200B16C2 /* QuotedReplyStore.swift */,
@@ -2840,6 +2861,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				92FE7BA3D2F3130DE3C69FC2 /* ReadingPreferenceView.swift in Sources */,
+				FAF6E228F03F2B426B30AE25 /* PinnedMessagesBar.swift in Sources */,
+				06953649A959AEF513277D09 /* CodeBlockCopyButton.swift in Sources */,
+				06259D91FE038848FE7155BF /* ReadingPreferenceStore.swift in Sources */,
+				6E340062277E5BC6F1B208FA /* PinnedMessagesStore.swift in Sources */,
+				5E4810FFA6F219E543B26BA2 /* DaySeparatorBuilder.swift in Sources */,
+				22E818FBDFBE5521738C4A17 /* AutoSpeakController.swift in Sources */,
 				2FC4EB9492CD44578096B527 /* CallModeView.swift in Sources */,
 				FE914A5574B24815A6E813A7 /* CallModeController.swift in Sources */,
 				C7AA3A8969BA631EB3FB2175 /* ThemeColorSettingsView.swift in Sources */,

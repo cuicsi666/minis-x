@@ -66,7 +66,7 @@ final class CallModeController: ObservableObject {
 
     // MARK: - Internals
 
-    private let recognizer = SpeechRecognitionManager()
+    private let recognizer = SpeechRecognitionManager.shared
     private var cancellables = Set<AnyCancellable>()
     private var tickTask: Task<Void, Never>?
 
