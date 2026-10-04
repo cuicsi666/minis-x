@@ -91,6 +91,13 @@ final class ChatMessage: Identifiable, ObservableObject {
     /// Links back to the QueuedPrompt so we can withdraw it.
     var queuedPromptId: UUID?
     let timestamp = Date()
+    /// [T-msg-timestamp] 该消息在数据库中的真实创建时间（`RawMessage.createdAt`）。
+    ///
+    /// `timestamp` 是属性初始化器，取的是**构造时刻**——reload 时即"会话打开
+    /// 时刻"，于是每条历史消息都会被标成刚刚发生。时间戳显示统一走
+    /// `createdAt ?? timestamp`：live 路径 `createdAt` 为 nil（回落到构造时刻，
+    /// 语义正确），reload 路径由 `ChatStore.toChatMessage` 从持久化行还原。
+    var createdAt: Date?
     /// [T-usage-capsule-time] When this turn FINISHED, for the clock on the
     /// usage capsule.
     ///

@@ -19,6 +19,13 @@ struct AssistantBlockView: View {
     var toolSnapshots: [ToolSnapshotItem] = []
     @Binding var highlightedBlockId: UUID?
     @Binding var detailBlock: AssistantBlock?
+    /// [T-msg-tts-fav-quote] 会话 id（`AIChatViewModel.sessionId`），供块级长按菜单的
+    /// 朗读 / 收藏 / 引用使用。由 cell 构造点（`BridgedAssistantBlockV3` /
+    /// `ChatMessageRow.assistantRow`）透传。
+    ///
+    /// 声明在属性列表**最后**：它是 memberwise init 的最后一个参数，两处调用点
+    /// 都把它放在实参列表末尾，顺序必须与声明一致。
+    var sessionId: String? = nil
     private var isHighlighted: Bool { highlightedBlockId == block.id }
 
     var body: some View {
@@ -130,6 +137,13 @@ struct AssistantBlockView: View {
                 } label: {
                     Label(AppLocalized("Copy Error"), systemImage: "doc.on.doc")
                 }
+                Divider()
+                // [T-msg-tts-fav-quote] 块级长按也能拿到整条消息的朗读 / 收藏 /
+                // 引用（正文走 ChatFavoritesStore.captureText —— 与收藏 store 同一
+                // 份"正文口径"，streaming 中 content 为空时回落 text blocks）。
+                MessageExtraMenuItems(message: message,
+                                      text: ChatFavoritesStore.captureText(of: message),
+                                      sessionId: sessionId)
             }
         }
     }

@@ -5872,6 +5872,9 @@ extension RawMessage {
         }
 
         let msg = ChatMessage(role: uiRole, content: textContent, blocks: blocks)
+        // [T-msg-timestamp] 还原持久化行的真实创建时间：`timestamp` 是构造时刻，
+        // reload 时等于"会话打开时刻"，用它显示时间戳会把全部历史标成刚刚。
+        msg.createdAt = createdAt
         // Deduplicate attachments by path
         var seenPaths = Set<String>()
         msg.attachments = userAttachments.filter { seenPaths.insert($0.path).inserted }

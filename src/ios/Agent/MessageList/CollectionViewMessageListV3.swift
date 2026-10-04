@@ -303,6 +303,8 @@ private struct BridgedAssistantBlockV3: View {
     @ObservedObject var message: ChatMessage
     @ObservedObject var bridge: CellStateBridgeV2
     var maxWidth: CGFloat
+    /// [T-msg-tts-fav-quote] 会话 id，透传给 `AssistantBlockView` 的块级长按菜单。
+    var sessionId: String? = nil
 
     private var blockAccessibilityId: String {
         switch block.kind {
@@ -339,7 +341,8 @@ private struct BridgedAssistantBlockV3: View {
             browserPool: bridge.browserPool,
             toolSnapshots: bridge.toolSnapshots,
             highlightedBlockId: .constant(nil),
-            detailBlock: $bridge.detailBlock
+            detailBlock: $bridge.detailBlock,
+            sessionId: sessionId
         )
         .frame(maxWidth: maxWidth > 0 ? maxWidth : nil, alignment: .leading)
         .frame(maxWidth: .infinity)
@@ -400,6 +403,15 @@ private struct BridgedAssistantBlockV3: View {
                             Label(AppLocalized("Compact Above"), systemImage: "arrow.down.right.and.arrow.up.left")
                         }
                     }
+                    Divider()
+                    // [T-msg-tts-fav-quote] 朗读 / 收藏 / 引用回复（共享实现）。
+                    // 与 footer 上的是同一份：长按脚本块 / 工具块的空白区也能拿到
+                    // 整条回复的这三个动作。
+                    MessageExtraMenuItems(message: message,
+                                          text: message.blocks
+                                            .filter { if case .text = $0.kind { return true }; return false }
+                                            .map(\.content).joined(separator: "\n\n"),
+                                          sessionId: sessionId)
                 } preview: {
                     // [T-ios-longpress-menu-preview-background] This .contextMenu
                     // is on a zero-size Color.clear overlay (kept zero-size to
@@ -443,6 +455,9 @@ private struct BridgedAssistantFooterV3: View {
     @ObservedObject var message: ChatMessage
     @ObservedObject var bridge: CellStateBridgeV2
     var maxWidth: CGFloat
+    /// [T-msg-tts-fav-quote] 会话 id（`AIChatViewModel.sessionId`），footer 的长按
+    /// 菜单（朗读 / 收藏 / 引用）需要它。由 cell 构造点透传。
+    var sessionId: String? = nil
 
     // showUsage and usageContentVisible are on bridge, toggled by double-tap on block cells.
 
@@ -450,6 +465,23 @@ private struct BridgedAssistantFooterV3: View {
     /// — see `shouldShowTypingIndicator` for the per-round semantics.
     private var showsTypingIndicator: Bool {
         bridge.isActiveMessage && message.shouldShowTypingIndicator
+    }
+
+    /// [T-msg-timestamp] 该 footer 是否要画"回复时间"这一行。
+    ///
+    /// 只在 assistant 回合上画：`T-ios-orphan-user-tail` 会把 footer 也挂在
+    /// 一条悬空的 **user** 消息上（用来放 Resume 横幅），那条 footer 再画一遍
+    /// 用户时间戳就会和 `userRow` 里的那份重复。
+    private var showsTimestampRow: Bool {
+        message.role == .assistant && TimestampDisplaySettings.shared.enabled
+    }
+
+    /// [T-msg-tts-fav-quote] 该回合正文（与菜单里 Copy All 同一份拼接口径），
+    /// 供朗读 / 收藏 / 引用复用。
+    private var replyText: String {
+        message.blocks
+            .filter { if case .text = $0.kind { return true }; return false }
+            .map(\.content).joined(separator: "\n\n")
     }
 
     /// True when any of the footer's conditional sections will actually
@@ -461,7 +493,9 @@ private struct BridgedAssistantFooterV3: View {
         let showError = message.error != nil
         let showResume = bridge.canResume && message.error == nil
         let showUsageRow = message.streamInterruptCount > 0 || bridge.showUsage
-        return showTyping || showError || showResume || showUsageRow
+        // [T-msg-timestamp] 时间戳也是内容：不带这一项时 footer 会塌成 0+0 padding，
+        // 时间戳被自己的 padding 挤没（配合 `needsFooter` 的放开门槛一起生效）。
+        return showTyping || showError || showResume || showUsageRow || showsTimestampRow
     }
 
     var body: some View {
@@ -511,6 +545,14 @@ private struct BridgedAssistantFooterV3: View {
                             .opacity(bridge.usageContentVisible ? 1 : 0)
                     }
                 }
+            }
+
+            // [T-msg-timestamp] 回复时间。`createdAt ?? timestamp`：reload 后
+            // `timestamp` 是"会话打开时刻"，只有持久化行的 `createdAt` 才是真实时间。
+            if showsTimestampRow {
+                Text(TimestampDisplaySettings.shared.formatted(message.createdAt ?? message.timestamp))
+                    .font(.system(size: 10))
+                    .foregroundStyle(ChatColors.tertiaryText)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -575,6 +617,11 @@ private struct BridgedAssistantFooterV3: View {
                             Label(AppLocalized("Compact Above"), systemImage: "arrow.down.right.and.arrow.up.left")
                         }
                     }
+                    Divider()
+                    // [T-msg-tts-fav-quote] 朗读 / 收藏 / 引用回复（共享实现）
+                    MessageExtraMenuItems(message: message,
+                                          text: replyText,
+                                          sessionId: sessionId)
                 } preview: {
                     // [T-ios-longpress-menu-preview-background] Opaque preview
                     // for the footer's zero-size Color.clear contextMenu overlay.
@@ -704,6 +751,9 @@ private struct BridgedWholeMessageV3: View {
     @ObservedObject var message: ChatMessage
     @ObservedObject var bridge: CellStateBridgeV2
     var maxWidth: CGFloat
+    /// [T-msg-tts-fav-quote] 会话 id，透传给 `ChatMessageRow` 的长按菜单
+    /// （收藏 / 引用需要把消息归属到会话）。由 cell 构造点传 `vm.sessionId`。
+    var sessionId: String? = nil
 
     var body: some View {
         ChatMessageRow(
@@ -723,7 +773,8 @@ private struct BridgedWholeMessageV3: View {
             onCopyScreenshot: bridge.onCopyScreenshot,
             onShowCompactSummary: bridge.onShowCompactSummary,
             browserPool: nil,
-            toolSnapshots: []
+            toolSnapshots: [],
+            sessionId: sessionId
         )
         // [T-ios-wholemessage-leading] `alignment: .leading`, like every other
         // bridged wrapper (header :291, block :344, footer :517). Without it the
@@ -1382,7 +1433,8 @@ extension CollectionViewMessageListV3 {
                     BridgedWholeMessageV3(
                         message: message,
                         bridge: bridge,
-                        maxWidth: width
+                        maxWidth: width,
+                        sessionId: vm.sessionId
                     )
                     // Suppress SwiftUI async display-link geometry observation
                     // to prevent use-after-free in ViewGraphGeometryObservers
@@ -1435,7 +1487,8 @@ extension CollectionViewMessageListV3 {
                         block: block,
                         message: message,
                         bridge: bridge,
-                        maxWidth: width
+                        maxWidth: width,
+                        sessionId: vm.sessionId
                     )
                     .transaction { $0.disablesAnimations = true }
                     .environmentObject(vm)
@@ -1451,7 +1504,8 @@ extension CollectionViewMessageListV3 {
                     BridgedAssistantFooterV3(
                         message: message,
                         bridge: bridge,
-                        maxWidth: width
+                        maxWidth: width,
+                        sessionId: vm.sessionId
                     )
                     .transaction { $0.disablesAnimations = true }
                     .environmentObject(vm)
@@ -2927,6 +2981,13 @@ extension CollectionViewMessageListV3 {
                         || message.error != nil
                         || message.streamInterruptCount > 0
                         || (cellBridges[message.id]?.showUsage == true)
+                        // [T-msg-timestamp] 回复时间戳画在 footer 里，所以每条
+                        // assistant 回合都必须有 footer cell —— 否则只有最后一条
+                        // 有 footer、也只有最后一条显示时间。跟随
+                        // TimestampDisplaySettings.shared.enabled（默认开）。
+                        // 注意：这里是快照构建路径，用户在设置里切换开关后要等下一次
+                        // 快照重建才生效（没有为它挂观察者）。
+                        || TimestampDisplaySettings.shared.enabled
                     if needsFooter {
                         newItems.append(.assistantFooter(message.id))
                     }
@@ -3134,7 +3195,15 @@ extension CollectionViewMessageListV3 {
                         // closer to the real height keeps the first-display
                         // correction (and its scroll shift) small.
                         // (footerProminent computed above, pre-guard.)
-                        layout.setEstimatedHeight(footerProminent ? 48 : 4, at: i)
+                        //
+                        // [T-msg-timestamp] 安静 footer 现在多一行时间戳
+                        // （垂直 padding 2+2 + 10pt 文字 ≈ 12pt → 16pt），
+                        // 仍按"靠近真实高度"播种，否则每条 assistant 回复
+                        // 首屏都要做一次 12pt 的向下修正（内容往下跳）。
+                        let footerSeed: CGFloat = footerProminent
+                            ? 48
+                            : (TimestampDisplaySettings.shared.enabled ? 16 : 4)
+                        layout.setEstimatedHeight(footerSeed, at: i)
                         #if DEBUG
                         // [BottomGapDiag] The footer is the item DIRECTLY BELOW
                         // the last block of the live assistant turn — i.e.
@@ -3157,7 +3226,7 @@ extension CollectionViewMessageListV3 {
                         // real height the layout already holds, so the estimate
                         // can be compared against the truth.
                         AppLogger(category: "BottomGapDiag").info(
-                            "[BottomGapDiag][footer] idx=\(i) seeded=\(footerProminent ? 48 : 4) "
+                            "[BottomGapDiag][footer] idx=\(i) seeded=\(footerSeed) "
                             + "prominent=\(footerProminent) isProcessing=\(vm.isProcessing) "
                             + "cached=\(layout.cachedHeight(at: i).map { String(format: "%.1f", $0) } ?? "-") "
                             + "precalc=\(layout.precalcHeight(at: i).map { String(format: "%.1f", $0) } ?? "-")")
@@ -3849,17 +3918,25 @@ extension CollectionViewMessageListV3 {
                 availableWidth: cvWidth - 32 /*cell*/ - 60 /*Spacer*/
             )
 
+            // [T-msg-timestamp] `userRow` 现在在气泡下方多画一行时间戳
+            // （VStack spacing 6 + 10pt 文字 ≈ 12pt 高 → 共 18pt）。预估算器必须
+            // 同增：少算 18pt 属于"估短"这一有害方向，短气泡会被 SwiftUI 截断、
+            // 长气泡在 settle 时跳高（见本函数头部 ±7pt row chrome 的同一类事故）。
+            let timestampH: CGFloat = TimestampDisplaySettings.shared.enabled ? 18 : 0
+
             guard !text.isEmpty else {
                 // Attachment-only message: return tiles height if any, else nil
                 // so the caller uses the coarse estimate (covers oddball cases).
-                return attachCount > 0 ? attachH : nil
+                return attachCount > 0 ? attachH + timestampH : nil
             }
 
             // `usableTextWidth` is part of the key, so the queued vs sent forms
             // (which differ by the withdraw button's 28pt) can't share a cached
             // measurement — the entry is invalidated implicitly when the queue
             // drains. Stated here because that is load-bearing, not incidental.
-            let key = "\(text.count)|\(Int(usableTextWidth))|\(Int(fontSize))|\(attachCount)|\(text.hashValue)"
+            // [T-msg-timestamp] `timestampH` 也进 key：设置开关是全局瞬时状态，
+            // 切换后同一段文本的高度不同，缓存不能跨两种状态复用。
+            let key = "\(text.count)|\(Int(usableTextWidth))|\(Int(fontSize))|\(attachCount)|\(Int(timestampH))|\(text.hashValue)"
             if let cached = cache[key] {
                 return cached
             }
@@ -3936,8 +4013,9 @@ extension CollectionViewMessageListV3 {
             // relayouts a full-height row (visible blank strip), while on a 42pt
             // bubble it is absorbed silently.
             let rowChrome: CGFloat = 7
-            // bubble vertical padding (10*2) + row chrome + attachment block + 1pt safety.
-            let total = textH + 20 + rowChrome + attachH + 1
+            // bubble vertical padding (10*2) + row chrome + attachment block + 1pt safety
+            // + [T-msg-timestamp] 气泡下方的时间戳行。
+            let total = textH + 20 + rowChrome + attachH + 1 + timestampH
             cache[key] = total
             #if DEBUG
             // [BottomGapDiag][user-bubble-estimate] Cheap trace of what this

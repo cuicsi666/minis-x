@@ -193,6 +193,67 @@ private struct PreviewContentSizeKey: PreferenceKey {
     }
 }
 
+// MARK: - Shared message menu actions
+
+/// [T-msg-tts-fav-quote] 消息长按菜单的三条共享动作：朗读 / 收藏 / 引用回复。
+///
+/// 用户气泡、助手气泡、助手 footer、助手 info 块四处长按菜单共用同一份实现，
+/// 避免四个入口的菜单项各自漂移（label / SF Symbol / 保护逻辑只写一遍）。
+///
+/// - `text` 由调用方给出该处**已有的**正文变量（用户行 = `userDisplayText`，
+///   助手行 = `fullReplyText`，footer = 同一份拼接），不在这里重新推导。
+/// - `sessionId` 来自 `AIChatViewModel.sessionId`（消息行自身没有会话上下文，
+///   由 V3 的 cell 构造点透传）。为 nil 时收藏/引用会落成"无会话"条目——正常
+///   路径不会出现，仅防御。
+struct MessageExtraMenuItems: View {
+    @ObservedObject var message: ChatMessage
+    /// 该行长按菜单使用的正文。
+    let text: String
+    /// 会话 id（`ChatSession.id` / `AIChatViewModel.sessionId`）。
+    let sessionId: String?
+
+    // 单例都是 ObservableObject，观察后菜单 label 才能跟着状态切换
+    // （朗读中 → 停止朗读；已收藏 → star.fill）。
+    @ObservedObject private var speech = MessageSpeechService.shared
+    @ObservedObject private var favorites = ChatFavoritesStore.shared
+
+    private var isSpeakingThis: Bool {
+        speech.isSpeakingMessage(id: message.id.uuidString)
+    }
+
+    private var isFavorited: Bool { favorites.isFavorited(message) }
+
+    var body: some View {
+        Button {
+            // [T-msg-tts-fav-quote] 音频会话冲突保护：录音中绝不抢 AVAudioSession。
+            // `.capture` 在 AudioSessionCoordinator 里优先级最高，此时启动 TTS 会
+            // 打断麦克风输入（与 `AIChatViewModel.canSpeakNow` 的 isCapturing 门一致）。
+            guard !AudioSessionCoordinator.shared.isCapturing else { return }
+            // 走与既有朗读路径相同的清洗（剥 Markdown / emoji / 长 URL），
+            // 否则 TTS 会把 `**`、代码块围栏和链接原样念出来。
+            speech.toggle(VoiceTextSanitizer.sanitize(text),
+                          messageId: message.id.uuidString)
+        } label: {
+            Label(isSpeakingThis ? AppLocalized("Stop Speaking") : AppLocalized("Read Aloud"),
+                  systemImage: isSpeakingThis ? "stop.circle" : "speaker.wave.2")
+        }
+        .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
+        Button {
+            favorites.toggle(message, sessionId: sessionId ?? "", text: text)
+        } label: {
+            Label(isFavorited ? AppLocalized("Unfavorite") : AppLocalized("Favorite"),
+                  systemImage: isFavorited ? "star.fill" : "star")
+        }
+
+        Button {
+            QuotedReplyStore.shared.quote(message, sessionId: sessionId ?? "", text: text)
+        } label: {
+            Label(AppLocalized("Quote Reply"), systemImage: "quote.bubble")
+        }
+    }
+}
+
 // MARK: - Chat Message Row
 
 struct ChatMessageRow: View {
@@ -225,6 +286,10 @@ struct ChatMessageRow: View {
     var onRevertCompact: (() -> Void)?
     var browserPool: BrowserTabPool?
     var toolSnapshots: [ToolSnapshotItem] = []
+    /// [T-msg-tts-fav-quote] 会话 id（`AIChatViewModel.sessionId`），长按菜单的
+    /// 收藏 / 引用要它把消息归属到会话。消息行自身没有会话上下文，由 V3 的
+    /// cell 构造点透传（`BridgedWholeMessageV3`）；nil 时退化为无会话条目。
+    var sessionId: String? = nil
     @State private var showUsage = false
     @State private var showCompactSummary = false
     /// [T-ios-delete-from-message] Confirmation gate for the suffix delete.
@@ -436,6 +501,15 @@ struct ChatMessageRow: View {
                         }
                     }
                 }
+
+                // [T-msg-timestamp] 气泡下方的发送时间。用 `createdAt ?? timestamp`
+                // ——reload 后 `timestamp` 是"会话打开时刻"，`createdAt` 才是持久化行
+                // 的真实时间。显示开关与风格由 TimestampDisplaySettings 决定。
+                if TimestampDisplaySettings.shared.enabled {
+                    Text(TimestampDisplaySettings.shared.formatted(message.createdAt ?? message.timestamp))
+                        .font(.system(size: 10))
+                        .foregroundStyle(ChatColors.tertiaryText)
+                }
             }
             .modifier(MinisOpenURLHandler())
             .contentShape(Rectangle())
@@ -490,6 +564,11 @@ struct ChatMessageRow: View {
                         Label("Compact Above", systemImage: "arrow.down.right.and.arrow.up.left")
                     }
                 }
+                Divider()
+                // [T-msg-tts-fav-quote] 朗读 / 收藏 / 引用回复（共享实现）
+                MessageExtraMenuItems(message: message,
+                                      text: userDisplayText,
+                                      sessionId: sessionId)
             } preview: {
                 // [T-ios-longpress-menu-preview-background] Opaque card so the
                 // long-press preview isn't transparent (see MessageContextMenuPreview).
@@ -563,7 +642,8 @@ struct ChatMessageRow: View {
                     browserPool: browserPool,
                     toolSnapshots: toolSnapshots,
                     highlightedBlockId: $highlightedBlockId,
-                    detailBlock: $detailBlock
+                    detailBlock: $detailBlock,
+                    sessionId: sessionId
                 )
             }
 
@@ -679,6 +759,13 @@ struct ChatMessageRow: View {
                                 Label("Compact Above", systemImage: "arrow.down.right.and.arrow.up.left")
                             }
                         }
+                        Divider()
+                        // [T-msg-tts-fav-quote] 朗读 / 收藏 / 引用回复（共享实现）。
+                        // 这段在 EquatableMenuGate 内，但新增项是无条件常量结构，
+                        // 不需要进 AssistantMenuKey（key 只描述"哪些可选动作存在"）。
+                        MessageExtraMenuItems(message: message,
+                                              text: fullReplyText,
+                                              sessionId: sessionId)
                     }
                     .equatable()
                 } preview: {
