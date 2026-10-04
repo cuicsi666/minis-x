@@ -112,6 +112,7 @@ final class AutoSpeakController: ObservableObject {
     /// - Parameters:
     ///   - messageId: stable id of the reply (`ChatMessage.id.uuidString`).
     ///   - text: the reply body to read.
+    @MainActor
     func handleAssistantReplyFinished(messageId: String, text: String) {
         guard isEnabled else { return }
         // [Minis_X 双重播报修复] 基础版「朗读回复」开关已开启时，交给那套 TTS，
