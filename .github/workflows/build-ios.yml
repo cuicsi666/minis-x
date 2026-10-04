@@ -107,14 +107,31 @@ jobs:
           fi
           test -d build/Build/Products/Release-iphoneos || { echo "NO .app produced"; exit 1; }
 
-      - name: Package IPA
+      - name: Verify & package IPA
         run: |
           set -e
+          echo "--- products dir ---"
+          ls -la build/Build/Products/Release-iphoneos/ || true
           APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name "*.app" | head -1)
-          echo "APP=$APP"
+          echo "APP=[$APP]"
           test -n "$APP" || { echo "app bundle missing"; exit 1; }
+          echo "--- app bundle contents ---"
+          ls -la "$APP" || true
+          if [ ! -f "$APP/Info.plist" ]; then
+            echo "❌ Info.plist MISSING from app bundle"
+            exit 1
+          fi
+          EXEC=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$APP/Info.plist")
+          echo "CFBundleExecutable=[$EXEC]"
+          if [ ! -f "$APP/$EXEC" ]; then
+            echo "❌ executable '$EXEC' MISSING from app bundle"
+            exit 1
+          fi
+          echo "✅ app bundle complete (Info.plist + $EXEC)"
           rm -rf ipa && mkdir -p ipa/Payload
-          cp -R "$APP" ipa/Payload/
+          ditto "$APP" "ipa/Payload/Minis.app"
+          echo "--- copied payload ---"
+          ls -la ipa/Payload/Minis.app/ | head -20
           cd ipa
           zip -qry ../Minis_X.ipa Payload
           cd ..
