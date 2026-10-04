@@ -7,6 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C7AA3A8969BA631EB3FB2175 /* ThemeColorSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2D8504D13EFC4D87798A57 /* ThemeColorSettingsView.swift */; };
+		9A962580A91AA67665C4E3D3 /* SessionSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884632B8F7D5DBC013BDA1F3 /* SessionSearchView.swift */; };
+		E9EBB13ED30F514B0BD2FE97 /* QuickPromptPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E07110199E933E700B20CE93 /* QuickPromptPanel.swift */; };
+		2AE99098B93745BB4E598C44 /* LiveTokenBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10473BDB28BB34999BA615E /* LiveTokenBar.swift */; };
+		8F7FC23645EE04A9C798B7A1 /* FavoritesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B72843D203404F8A01826178 /* FavoritesListView.swift */; };
+		5A98C65AB910D71F3B139607 /* ExportShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0993922272C1A417EF318BF9 /* ExportShareSheet.swift */; };
+		4A065D91B616E78D6E5F9740 /* SessionSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8F9942265C321CD1C51144 /* SessionSearchService.swift */; };
+		FD54E49DAABBD1C7DD746D7B /* QuotedReplyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FED5A5B5A26109A7200B16C2 /* QuotedReplyStore.swift */; };
+		01F9855B3D13AFA976F68321 /* QuickPromptStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE41E04904007D7641F40943 /* QuickPromptStore.swift */; };
+		104141BAF03CBA3BF3C09E28 /* MessageTimestampFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208B76F79B0236EA8F1FAB17 /* MessageTimestampFormatter.swift */; };
+		81D479B2E4390CDE340B8CCE /* MessageSpeechService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 776E20991CFAA7E55FF7F900 /* MessageSpeechService.swift */; };
+		EBD147FC374ADF7C2C0B5713 /* LiveTokenUsage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF353ABCE10FE139F4871FB /* LiveTokenUsage.swift */; };
+		40B81EE05A92C77C4766075A /* ConversationExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A128E8325B7E18596AE176 /* ConversationExporter.swift */; };
+		0F494C926EBE9742AFF9FF34 /* MinisXBundledProviderSeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CC8CC7FE150BE20B6A41237 /* MinisXBundledProviderSeed.swift */; };
+		B998122D0FC64C64BBD9E538 /* ChatFavoritesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E9FB70FAE62CA813D294575 /* ChatFavoritesStore.swift */; };
+		0E154067693F34800D8CF09B /* AppThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CA425D608CECE63E8E1F4D /* AppThemeManager.swift */; };
 		21FED4B7BB6F6D9476C9992E /* VoiceProvider+System.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88993FC8E3F0199C6638F664 /* VoiceProvider+System.swift */; };
 		241D530017827D7F0EB604DE /* VoiceProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2941B643B8A2F048A2B154E /* VoiceProviderFactory.swift */; };
 		2A4FD49F872431D703328384 /* VoiceOutputPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424510790AF3FB2452D3CCE3 /* VoiceOutputPlayer.swift */; };
@@ -636,6 +652,22 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5F2D8504D13EFC4D87798A57 /* ThemeColorSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Settings/ThemeColorSettingsView.swift"; sourceTree = "<group>"; };
+		884632B8F7D5DBC013BDA1F3 /* SessionSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/SessionSearchView.swift"; sourceTree = "<group>"; };
+		E07110199E933E700B20CE93 /* QuickPromptPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/QuickPromptPanel.swift"; sourceTree = "<group>"; };
+		B10473BDB28BB34999BA615E /* LiveTokenBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/LiveTokenBar.swift"; sourceTree = "<group>"; };
+		B72843D203404F8A01826178 /* FavoritesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/FavoritesListView.swift"; sourceTree = "<group>"; };
+		0993922272C1A417EF318BF9 /* ExportShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/ExportShareSheet.swift"; sourceTree = "<group>"; };
+		0B8F9942265C321CD1C51144 /* SessionSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionSearchService.swift"; sourceTree = "<group>"; };
+		FED5A5B5A26109A7200B16C2 /* QuotedReplyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QuotedReplyStore.swift"; sourceTree = "<group>"; };
+		FE41E04904007D7641F40943 /* QuickPromptStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QuickPromptStore.swift"; sourceTree = "<group>"; };
+		208B76F79B0236EA8F1FAB17 /* MessageTimestampFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageTimestampFormatter.swift"; sourceTree = "<group>"; };
+		776E20991CFAA7E55FF7F900 /* MessageSpeechService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageSpeechService.swift"; sourceTree = "<group>"; };
+		1DF353ABCE10FE139F4871FB /* LiveTokenUsage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LiveTokenUsage.swift"; sourceTree = "<group>"; };
+		24A128E8325B7E18596AE176 /* ConversationExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationExporter.swift"; sourceTree = "<group>"; };
+		6CC8CC7FE150BE20B6A41237 /* MinisXBundledProviderSeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Config/MinisXBundledProviderSeed.swift"; sourceTree = "<group>"; };
+		2E9FB70FAE62CA813D294575 /* ChatFavoritesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatFavoritesStore.swift"; sourceTree = "<group>"; };
+		A6CA425D608CECE63E8E1F4D /* AppThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppThemeManager.swift"; sourceTree = "<group>"; };
 		0ED149397BEA7E0408C92688 /* GroupVoiceModelsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GroupVoiceModelsView.swift; sourceTree = "<group>"; };
 		0F5379380323FA8C6477708C /* GroupSlotPicker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GroupSlotPicker.swift; sourceTree = "<group>"; };
 		16FF3462D09402F14B610CD6 /* VoiceWaveformView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VoiceWaveformView.swift; sourceTree = "<group>"; };
@@ -1812,6 +1844,12 @@
 		E5D000030 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				5F2D8504D13EFC4D87798A57 /* ThemeColorSettingsView.swift */,
+				884632B8F7D5DBC013BDA1F3 /* SessionSearchView.swift */,
+				E07110199E933E700B20CE93 /* QuickPromptPanel.swift */,
+				B10473BDB28BB34999BA615E /* LiveTokenBar.swift */,
+				B72843D203404F8A01826178 /* FavoritesListView.swift */,
+				0993922272C1A417EF318BF9 /* ExportShareSheet.swift */,
 				E51000012 /* ContentView.swift */,
 				E5SRS0011 /* SessionRefreshScheduler.swift */,
 				F1V00014 /* Alarms */,
@@ -1842,6 +1880,16 @@
 		E5E000031 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				0B8F9942265C321CD1C51144 /* SessionSearchService.swift */,
+				FED5A5B5A26109A7200B16C2 /* QuotedReplyStore.swift */,
+				FE41E04904007D7641F40943 /* QuickPromptStore.swift */,
+				208B76F79B0236EA8F1FAB17 /* MessageTimestampFormatter.swift */,
+				776E20991CFAA7E55FF7F900 /* MessageSpeechService.swift */,
+				1DF353ABCE10FE139F4871FB /* LiveTokenUsage.swift */,
+				24A128E8325B7E18596AE176 /* ConversationExporter.swift */,
+				6CC8CC7FE150BE20B6A41237 /* MinisXBundledProviderSeed.swift */,
+				2E9FB70FAE62CA813D294575 /* ChatFavoritesStore.swift */,
+				A6CA425D608CECE63E8E1F4D /* AppThemeManager.swift */,
 				E5G000014 /* AgentActivityAttributes.swift */,
 				E5AT00011 /* AudioTogglePlaybackIntent.swift */,
 				E5Q000013 /* AppLogger.swift */,
@@ -2786,6 +2834,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C7AA3A8969BA631EB3FB2175 /* ThemeColorSettingsView.swift in Sources */,
+				9A962580A91AA67665C4E3D3 /* SessionSearchView.swift in Sources */,
+				E9EBB13ED30F514B0BD2FE97 /* QuickPromptPanel.swift in Sources */,
+				2AE99098B93745BB4E598C44 /* LiveTokenBar.swift in Sources */,
+				8F7FC23645EE04A9C798B7A1 /* FavoritesListView.swift in Sources */,
+				5A98C65AB910D71F3B139607 /* ExportShareSheet.swift in Sources */,
+				4A065D91B616E78D6E5F9740 /* SessionSearchService.swift in Sources */,
+				FD54E49DAABBD1C7DD746D7B /* QuotedReplyStore.swift in Sources */,
+				01F9855B3D13AFA976F68321 /* QuickPromptStore.swift in Sources */,
+				104141BAF03CBA3BF3C09E28 /* MessageTimestampFormatter.swift in Sources */,
+				81D479B2E4390CDE340B8CCE /* MessageSpeechService.swift in Sources */,
+				EBD147FC374ADF7C2C0B5713 /* LiveTokenUsage.swift in Sources */,
+				40B81EE05A92C77C4766075A /* ConversationExporter.swift in Sources */,
+				0F494C926EBE9742AFF9FF34 /* MinisXBundledProviderSeed.swift in Sources */,
+				B998122D0FC64C64BBD9E538 /* ChatFavoritesStore.swift in Sources */,
+				0E154067693F34800D8CF09B /* AppThemeManager.swift in Sources */,
 				AC0000202 /* ProviderCustomizationGenerated.swift in Sources */,
 				E54000AC1 /* DebugSkillGenerated.swift in Sources */,
 				E5FP00100 /* AppGroupChangeWatcher.swift in Sources */,

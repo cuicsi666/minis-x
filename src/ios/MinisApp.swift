@@ -407,6 +407,8 @@ struct MinisApp: App {
                     // in BackupRunController.finished(token:).
                     // Migrate legacy provider config on first launch after upgrade
                     ProviderMigration.migrateIfNeeded(store: ProviderConfigStore.shared)
+                    // [Minis_X #1] 内置模型开箱即用：首次安装注入 ipix provider + 模型目录 + 默认模型组
+                    MinisXBundledProviderSeed.seedIfNeeded()
                     // Refresh model lists once per day to keep them current
                     ProviderConfigStore.shared.refreshAllModelsIfNeeded()
                     // [T-mimo-shadow-voice] One-time upgrade fix: force-refresh
