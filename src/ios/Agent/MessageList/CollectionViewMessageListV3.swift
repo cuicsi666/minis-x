@@ -231,6 +231,19 @@ private struct BridgedAssistantHeaderV3: View {
     /// navigation happened, and no deep-link log line appeared.) So the handler
     /// is threaded down the same way every other cell callback already is.
     var onOpenSoulSettings: (() -> Void)?
+
+    /// 跨天的回合返回日期文案（今天 -> nil，昨天 -> "昨天"，更早 -> "M月d日 EEE"）。
+    static func daySeparatorLabel(for message: ChatMessage) -> String? {
+        let date = message.completedAt ?? message.createdAt ?? message.timestamp
+        let cal = Calendar.current
+        if cal.isDateInToday(date) { return nil }
+        if cal.isDateInYesterday(date) { return "昨天" }
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "zh_CN")
+        f.dateFormat = "M月d日 EEE"
+        return f.string(from: date)
+    }
+
     var body: some View {
         HStack(spacing: 6) {
             // [T-soul-custom-icon] Honours a user-chosen emoji or image;
@@ -255,6 +268,18 @@ private struct BridgedAssistantHeaderV3: View {
             Text(soulMeta.name.isEmpty ? "Minis" : soulMeta.name)
                 .font(.body.weight(.semibold))
                 .foregroundStyle(ChatColors.primaryText)
+
+            Spacer(minLength: 8)
+
+            // [Minis_X] 日期分隔标签：非今日的回合在头部标出日期
+            if let dayLabel = Self.daySeparatorLabel(for: message) {
+                Text(dayLabel)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(ChatColors.secondaryText)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Capsule().fill(ChatColors.inputIconBg))
+            }
         }
         // [T-ios-assistant-header-open-soul] Hit area and tap, applied to the
         // icon+name HStack only — NOT to the full-width row below it.

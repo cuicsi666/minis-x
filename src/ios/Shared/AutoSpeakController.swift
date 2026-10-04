@@ -114,6 +114,9 @@ final class AutoSpeakController: ObservableObject {
     ///   - text: the reply body to read.
     func handleAssistantReplyFinished(messageId: String, text: String) {
         guard isEnabled else { return }
+        // [Minis_X 双重播报修复] 基础版「朗读回复」开关已开启时，交给那套 TTS，
+        // 本模块让位，避免两套朗读同时出声。
+        if VoiceOutputState.shared.isEnabled { return }
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         guard messageId != lastSpokenMessageId else { return }
 

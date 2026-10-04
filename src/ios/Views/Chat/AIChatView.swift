@@ -343,8 +343,8 @@ struct AIChatView: View {
     @State private var showAttachmentMenu = false
     /// [Minis_X #5] 快捷提示词面板
     @State private var showQuickPrompts = false
-    /// [Minis_X] 通话模式全屏
-    @State private var showCallMode = false
+    /// [Minis_X] 通话模式状态（内联，不弹全屏）
+    @ObservedObject private var callController = CallModeController.shared
     /// [Minis_X] 翻译面板
     @State private var translationTarget: (id: String, text: String)?
     /// [Minis_X] 长图分享
@@ -981,9 +981,6 @@ struct AIChatView: View {
             if let items = shareImageItems {
                 ExportShareSheet.ShareSheet(activityItems: items)
             }
-        }
-        .fullScreenCover(isPresented: $showCallMode) {
-            CallModeView(controller: CallModeController.shared)
         }
         .fullScreenCover(item: $previewImageFile) { fileURL in
             MinisImageFilePreviewView(fileURL: fileURL)
@@ -3637,7 +3634,6 @@ struct AIChatView: View {
             controller.isAIBusy = { vm.isProcessing }
             controller.latestAssistantReply = { AIChatView.latestAssistantText(in: vm) }
             controller.start()
-            showCallMode = true
         } label: {
             Image(systemName: "phone.fill")
                 .font(.system(size: 16, weight: .medium))
@@ -3705,6 +3701,14 @@ struct AIChatView: View {
     /// `__swift_instantiateConcreteTypeFromMangledNameV2`).
     private var inputFieldOrWaveform: AnyView {
         let topPadding: CGFloat = (vm.attachments.isEmpty && vm.loadingVideoCount == 0) ? 16 : 11
+        // [Minis_X 通话模式·内联版] 通话中：识别文字就地显示、就地发送，不弹全屏
+        if callController.isActive {
+            return AnyView(
+                CallModeInlineBar(controller: callController, onHangUp: {
+                    callController.hangUp()
+                })
+            )
+        }
         if voiceInputActive {
             return AnyView(
                 // [voice-correction §6] Recent conversation turns, straight from the

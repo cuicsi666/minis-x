@@ -5941,6 +5941,10 @@ final class AIChatViewModel: ObservableObject, SpeechControlling {
         var helperTurnWarningInjected = false
 
         var userSystemPrompt = baseSystemPrompt
+        // [Minis_X] AI 人设预设：选中的人设作为系统提示词前缀随回合发送
+        if let persona = PersonaPresetStore.shared.activePreset {
+            userSystemPrompt += "\n\n## 当前人设：" + persona.name + "\n" + persona.prompt + "\n"
+        }
         // `var` for [T-ios-switch-model-next-request]: a mid-turn model switch
         // replaces it so the next request carries the new model's limits.
         var activeModel = ProviderConfigStore.shared.entry(for: entry.id)?.model ?? selectedModel

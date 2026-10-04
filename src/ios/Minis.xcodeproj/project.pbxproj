@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D332F42BBD58AFF498967D54 /* CallModeInlineBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B443A17EBAF74B88DC48513 /* CallModeInlineBar.swift */; };
 		C9CB4EC53FAE23F7B4648972 /* PersonaPresetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9294230F36186F7C4173B00B /* PersonaPresetView.swift */; };
 		1FF3EB5BEE61BC3E8570249A /* TranslationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8671945C0D9C94DBC4BE3038 /* TranslationSheet.swift */; };
 		C9B0C5B5DDB01A7CD2A3019E /* UsageTrendChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3684514359E25FEC0EAA474 /* UsageTrendChart.swift */; };
@@ -668,6 +669,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4B443A17EBAF74B88DC48513 /* CallModeInlineBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/CallModeInlineBar.swift"; sourceTree = "<group>"; };
 		9294230F36186F7C4173B00B /* PersonaPresetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Settings/PersonaPresetView.swift"; sourceTree = "<group>"; };
 		8671945C0D9C94DBC4BE3038 /* TranslationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/TranslationSheet.swift"; sourceTree = "<group>"; };
 		E3684514359E25FEC0EAA474 /* UsageTrendChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/UsageTrendChart.swift"; sourceTree = "<group>"; };
@@ -1876,6 +1878,7 @@
 		E5D000030 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				4B443A17EBAF74B88DC48513 /* CallModeInlineBar.swift */,
 				9294230F36186F7C4173B00B /* PersonaPresetView.swift */,
 				8671945C0D9C94DBC4BE3038 /* TranslationSheet.swift */,
 				E3684514359E25FEC0EAA474 /* UsageTrendChart.swift */,
@@ -2882,6 +2885,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D332F42BBD58AFF498967D54 /* CallModeInlineBar.swift in Sources */,
 				C9CB4EC53FAE23F7B4648972 /* PersonaPresetView.swift in Sources */,
 				1FF3EB5BEE61BC3E8570249A /* TranslationSheet.swift in Sources */,
 				C9B0C5B5DDB01A7CD2A3019E /* UsageTrendChart.swift in Sources */,

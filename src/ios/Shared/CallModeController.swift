@@ -70,6 +70,9 @@ final class CallModeController: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private var tickTask: Task<Void, Never>?
 
+    /// 通话前「朗读回复」的原始状态，播报结束时恢复。
+    private var systemReadWasEnabled = false
+
     private var silenceTicks = 0
     private var hasSpoken = false
     /// 连续静音达到该 tick 数（每个 0.1s）判定"说完了"。
@@ -107,6 +110,7 @@ final class CallModeController: ObservableObject {
     }
 
     func hangUp() {
+        restoreSystemRead()
         tickTask?.cancel()
         tickTask = nil
         recognizer.stopRecording()
@@ -118,6 +122,14 @@ final class CallModeController: ObservableObject {
         recognizedText = ""
         replyText = ""
         levels = Array(repeating: 0.05, count: 28)
+    }
+
+    /// 恢复通话前的「朗读回复」开关状态。
+    private func restoreSystemRead() {
+        if systemReadWasEnabled {
+            VoiceOutputState.shared.isEnabled = true
+            systemReadWasEnabled = false
+        }
     }
 
     // MARK: - Loop
@@ -192,6 +204,9 @@ final class CallModeController: ObservableObject {
             return
         }
         state = .speaking
+        // [Minis_X 双重播报修复] 通话播报期间暂停基础版朗读，播完自动恢复。
+        systemReadWasEnabled = VoiceOutputState.shared.isEnabled
+        if VoiceOutputState.shared.isEnabled { VoiceOutputState.shared.isEnabled = false }
         MessageSpeechService.shared.speak(trimmed)
     }
 
@@ -204,6 +219,7 @@ final class CallModeController: ObservableObject {
 
     private func resumeListening() {
         guard state != .idle else { return }
+        restoreSystemRead()
         recognizedText = ""
         silenceTicks = 0
         hasSpoken = false
