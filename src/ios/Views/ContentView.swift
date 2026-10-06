@@ -8263,6 +8263,7 @@ private enum SettingsDestination: Hashable {
 private struct SettingsSheet: View {
     @Binding var showTerminal: Bool
     @AppStorage("appearanceMode") private var appearanceMode: Int = 0
+    @AppStorage("minisVPSEnabled") private var minisVPSEnabled = true
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var deepLink = DeepLinkCoordinator.shared
     @State private var navPath = NavigationPath()
@@ -8573,6 +8574,22 @@ private struct SettingsSheet: View {
                             }
                         }
                     }
+                }
+
+                Section("服务器监控 (Minis_VPS)") {
+                    Toggle(isOn: $minisVPSEnabled) {
+                        Label {
+                            Text("悬浮监控窗")
+                        } icon: {
+                            Image(systemName: "server.rack")
+                                .font(.system(size: 9))
+                                .foregroundStyle(.white)
+                                .frame(width: 21, height: 21)
+                                .background(.green, in: Circle())
+                        }
+                    }
+                } footer: {
+                    Text("在聊天/主界面右下角显示服务器 CPU · 内存 · 磁盘 · 负载 实时悬浮监控窗（每秒刷新，可拖动）。")
                 }
 
                 Section("Logs") {
