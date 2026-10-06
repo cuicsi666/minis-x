@@ -180,8 +180,8 @@ struct ServerMonitorFloatingView: View {
     // MARK: - Drag helpers
     /// Current rendered card size (collapsed and expanded differ).
     private func cardSize() -> CGSize {
-        let w = min(UIScreen.main.bounds.width - 16, expanded ? 350 : 320)
-        let h = expanded ? 360 : 58
+        let w = min(UIScreen.main.bounds.width - 16, CGFloat(expanded ? 350 : 320))
+        let h: CGFloat = expanded ? 360 : 58
         return CGSize(width: w, height: h)
     }
 
@@ -193,9 +193,9 @@ struct ServerMonitorFloatingView: View {
         let sw = UIScreen.main.bounds.width
         let sh = UIScreen.main.bounds.height
         let minX = -(sw - size.width - inset)
-        let maxX = 0.0
+        let maxX: CGFloat = 0
         let minY = -(sh - size.height - inset)
-        let maxY = 0.0
+        let maxY: CGFloat = 0
         let dx = min(maxX, max(minX, c.width))
         let dy = min(maxY, max(minY, c.height))
         return CGSize(width: dx, height: dy)
