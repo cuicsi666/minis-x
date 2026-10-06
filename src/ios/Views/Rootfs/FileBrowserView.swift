@@ -1114,7 +1114,7 @@ class FileBrowserViewModel: ObservableObject {
         }
         guard let targetID = parentID else { return }
 
-        let domainIdentifier = NSFileProviderDomainIdentifier("com.cuicsi.minisx.files")
+        let domainIdentifier = NSFileProviderDomainIdentifier("com.cuicsi.minisvps.files")
         NSFileProviderManager.getDomainsWithCompletionHandler { domains, _ in
             guard let domain = domains.first(where: { $0.identifier == domainIdentifier }) else {
                 return

@@ -167,7 +167,7 @@ final class ChatFavoritesStore: ObservableObject {
 
     /// Serial queue for disk writes. Serial (not concurrent) so two saves can
     /// never interleave; `.utility` because a favourites save is never urgent.
-    private let ioQueue = DispatchQueue(label: "com.cuicsi.minisx.chat-favorites.io",
+    private let ioQueue = DispatchQueue(label: "com.cuicsi.minisvps.chat-favorites.io",
                                         qos: .utility)
 
     init(fileURL: URL? = nil) {

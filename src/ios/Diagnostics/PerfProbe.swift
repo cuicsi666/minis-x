@@ -101,7 +101,7 @@ enum PerfProbe {
     nonisolated(unsafe) private static var agentBuckets: [String: Bucket] = [:]
     nonisolated(unsafe) private static var lastOutlierLog: TimeInterval = 0
     nonisolated(unsafe) private static var flushTimer: DispatchSourceTimer?
-    private static let flushQueue = DispatchQueue(label: "com.cuicsi.minisx.perfprobe", qos: .utility)
+    private static let flushQueue = DispatchQueue(label: "com.cuicsi.minisvps.perfprobe", qos: .utility)
     nonisolated(unsafe) private static var didStart = false
 
     /// Begin periodic flushing. Idempotent; safe to call from anywhere.

@@ -30,6 +30,8 @@ struct ServerMonitorFloatingView: View {
     @State private var savedOffset: CGSize = .zero
     @State private var dragOffset: CGSize = .zero
     @GestureState private var isDragging = false
+    // Prevents re-appearing views from snapping back to the corner.
+    @State private var hasPositioned = false
 
     var body: some View {
         if enabled {
@@ -52,24 +54,37 @@ struct ServerMonitorFloatingView: View {
                         .strokeBorder(.white.opacity(0.12), lineWidth: 0.7)
                 )
                 .shadow(color: .black.opacity(0.18), radius: isDragging ? 8 : 14, y: 5)
-                .position(x: container.size.width - collapsedCardWidth/2 - 12 + dragOffset.width,
-                          y: container.size.height - collapsedCardHeight/2 - 12 + dragOffset.height)
+                .position(x: container.size.width  - cardSize(container: container).width/2  - 12 + dragOffset.width,
+                          y: container.size.height - cardSize(container: container).height/2 - 12 + dragOffset.height)
                 .onAppear {
-                    lockToTrailingCorner(container: container)
+                    // Only lock to the corner on the very first appearance;
+                    // keep a previously-dragged position across re-renders and
+                    // re-appears instead of snapping back to the corner.
+                    if !hasPositioned {
+                        lockToTrailingCorner(container: container)
+                        hasPositioned = true
+                    }
                 }
                 .gesture(
-                    DragGesture(minimumDistance: 10, coordinateSpace: .global)
+                    DragGesture(minimumDistance: 8, coordinateSpace: .global)
                         .updating($isDragging) { _, state, _ in state = true }
                         .onChanged { value in
-                            dragOffset = CGSize(width: savedOffset.width + value.translation.width,
-                                                height: savedOffset.height + value.translation.height)
+                            // Clamp while dragging so the card follows the
+                            // finger smoothly and never leaves the screen.
+                            dragOffset = clamped(
+                                CGSize(width: savedOffset.width  + value.translation.width,
+                                       height: savedOffset.height + value.translation.height),
+                                container: container)
                         }
                         .onEnded { value in
-                            var candidate = CGSize(width: savedOffset.width + value.translation.width,
-                                                   height: savedOffset.height + value.translation.height)
-                            candidate = clamped(candidate, container: container)
-                            savedOffset = candidate
-                            dragOffset = candidate
+                            // Save the clamped final position so the next drag
+                            // continues from here (never resets to the corner).
+                            let final = clamped(
+                                CGSize(width: savedOffset.width  + value.translation.width,
+                                       height: savedOffset.height + value.translation.height),
+                                container: container)
+                            savedOffset = final
+                            dragOffset = final
                         }
                         .simultaneously(with: TapGesture().onEnded {
                             withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
@@ -181,25 +196,38 @@ struct ServerMonitorFloatingView: View {
     }
 
     // MARK: - Drag helpers
+    /// Current rendered card size (collapsed and expanded differ).
+    private func cardSize(container: GeometryProxy) -> CGSize {
+        let w = expanded ? min(container.size.width - 32, 340) : collapsedCardWidth
+        let h = expanded ? 360 : collapsedCardHeight
+        return CGSize(width: w, height: h)
+    }
+
     private func lockToTrailingCorner(container: GeometryProxy) {
         // Start pinned to the trailing, bottom area (respecting trailing edge).
         savedOffset = CGSize(width: 0, height: 0)
         dragOffset = savedOffset
     }
 
-    /// Clamp so the card stays fully on-screen when dragging.
+    /// Clamp the drag offset so the card stays fully on-screen.
+    ///
+    /// Offset (0,0) anchors the card at the bottom-trailing corner (12pt clear
+    /// of the right/bottom edges). The clamp keeps the card's whole bounds
+    /// visible while allowing it to move freely in any direction on screen.
     private func clamped(_ c: CGSize, container: GeometryProxy) -> CGSize {
-        let w = expanded ? min(container.size.width - 32, 340) : collapsedCardWidth
-        let h = expanded ? 360 : collapsedCardHeight
-        // With `.position` anchored at the trailing+bottom corner:
-        //   dx 0   → card flush to right edge
-        //   dx < 0 → moved inward (left)
-        //   dy 0   → flush to bottom
-        //   dy < 0 → moved up
-        let maxInwardX = max(container.size.width - w, 0)
-        let maxInwardY = max(container.size.height - h, 0)
-        let dx = min(0, max(-maxInwardX, c.width))
-        let dy = min(0, max(-maxInwardY, c.height))
+        let inset: CGFloat = 12
+        let size = cardSize(container: container)
+        let anchorX = container.size.width  - size.width/2  - inset
+        let anchorY = container.size.height - size.height/2 - inset
+
+        // Allowed range for the card *center* (keeps the entire card visible).
+        let minCX = inset + size.width/2
+        let maxCX = container.size.width  - inset - size.width/2
+        let minCY = inset + size.height/2
+        let maxCY = container.size.height - inset - size.height/2
+
+        let dx = min(maxCX - anchorX, max(minCX - anchorX, c.width))
+        let dy = min(maxCY - anchorY, max(minCY - anchorY, c.height))
         return CGSize(width: dx, height: dy)
     }
 }

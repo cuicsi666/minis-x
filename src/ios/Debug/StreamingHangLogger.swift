@@ -20,7 +20,7 @@ final class StreamingHangLogger {
     static let shared = StreamingHangLogger()
 
     private let logger = AppLogger(category: "HangDetector")
-    private let queue = DispatchQueue(label: "com.cuicsi.minisx.StreamingHangLogger")
+    private let queue = DispatchQueue(label: "com.cuicsi.minisvps.StreamingHangLogger")
     private var refCount: Int = 0
     private var flushTimer: DispatchSourceTimer?
 

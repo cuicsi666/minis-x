@@ -147,7 +147,7 @@ private enum ModelsCache {
 
     private static var cacheDir: URL {
         FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("com.cuicsi.minisx.models-cache", isDirectory: true)
+            .appendingPathComponent("com.cuicsi.minisvps.models-cache", isDirectory: true)
     }
 
     /// SHA-256 hash of the credential — irreversible.

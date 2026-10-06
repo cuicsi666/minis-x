@@ -5,7 +5,7 @@ import os.log
 final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     private let containerItemIdentifier: NSFileProviderItemIdentifier
     private let recursive: Bool
-    private static let log = OSLog(subsystem: "com.cuicsi.minisx.FileProvider", category: "Enumerator")
+    private static let log = OSLog(subsystem: "com.cuicsi.minisvps.FileProvider", category: "Enumerator")
 
     init(containerItemIdentifier: NSFileProviderItemIdentifier, recursive: Bool = false) {
         self.containerItemIdentifier = containerItemIdentifier

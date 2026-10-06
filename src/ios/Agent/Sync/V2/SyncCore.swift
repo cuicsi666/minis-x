@@ -270,7 +270,7 @@ final class SyncCore {
                 }
             }
         }
-        m.start(queue: DispatchQueue(label: "com.cuicsi.minisx.sync.pathMonitor"))
+        m.start(queue: DispatchQueue(label: "com.cuicsi.minisvps.sync.pathMonitor"))
         pathMonitor = m
     }
 

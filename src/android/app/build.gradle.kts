@@ -23,7 +23,7 @@ fun customizationValue(key: String): String =
     (appCustomization.getProperty(key) ?: "").replace("\"", "\\\"")
 
 android {
-    namespace = "com.cuicsi.minisx"
+    namespace = "com.cuicsi.minisvps"
     // [T-android-dynamic-island] Bumped 35→36 so the Android 16 (Baklava)
     // Live Updates APIs — Notification.ProgressStyle, FLAG_PROMOTED_ONGOING,
     // NotificationManager.canPostPromotedNotifications(), setShortCriticalText —
@@ -33,7 +33,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.cuicsi.minisx"
+        applicationId = "com.cuicsi.minisvps"
         minSdk = 26
         targetSdk = 35
         versionCode = 28

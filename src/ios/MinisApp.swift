@@ -745,7 +745,7 @@ struct MinisApp: App {
     // MARK: - FileProvider
 
     private static let fileProviderDomain = NSFileProviderDomain(
-        identifier: NSFileProviderDomainIdentifier("com.cuicsi.minisx.files"),
+        identifier: NSFileProviderDomainIdentifier("com.cuicsi.minisvps.files"),
         displayName: "Minis"
     )
 
@@ -786,7 +786,7 @@ struct MinisApp: App {
         guard previous != current else { return }
         UserDefaults.standard.set(current, forKey: key)
 
-        guard let container = fm.containerURL(forSecurityApplicationGroupIdentifier: "group.com.cuicsi.minisx") else { return }
+        guard let container = fm.containerURL(forSecurityApplicationGroupIdentifier: "group.com.cuicsi.minisvps") else { return }
         let dir = container.appendingPathComponent("MinisConfig", isDirectory: true)
         try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
         let url = dir.appendingPathComponent("fp-sync-trace.log")
@@ -991,7 +991,7 @@ struct MinisApp: App {
             }
 
             // Remove any stale domains with different identifiers, then add ours.
-            let stale = domains.filter { $0.identifier.rawValue.contains("com.cuicsi.minisx") }
+            let stale = domains.filter { $0.identifier.rawValue.contains("com.cuicsi.minisvps") }
             let group = DispatchGroup()
             for d in stale {
                 group.enter()
@@ -1174,7 +1174,7 @@ struct MinisApp: App {
         let fm = FileManager.default
         let library = fm.urls(for: .libraryDirectory, in: .userDomainMask).first!
         // [Minis_X 侧载修复] 无 App Group 时跳过本次迁移（强解会崩）
-        guard let container = fm.containerURL(forSecurityApplicationGroupIdentifier: "group.com.cuicsi.minisx") else {
+        guard let container = fm.containerURL(forSecurityApplicationGroupIdentifier: "group.com.cuicsi.minisvps") else {
             return
         }
 
@@ -1217,7 +1217,7 @@ struct MinisApp: App {
     /// targets logged during MOUNT setup.
     private static func logFPSyncTracePaths() {
         let fm = FileManager.default
-        let groupID = "group.com.cuicsi.minisx"
+        let groupID = "group.com.cuicsi.minisvps"
         let containerURL = fm.containerURL(forSecurityApplicationGroupIdentifier: groupID)
         let containerPath = containerURL?.path ?? "<nil>"
         let resolvedContainer = containerURL?.resolvingSymlinksInPath().path ?? "<nil>"

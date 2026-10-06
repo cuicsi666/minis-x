@@ -397,7 +397,7 @@
             android:excludeFromRecents="false"
             android:theme="@style/Theme.Minis">
             <intent-filter>
-                <action android:name="com.cuicsi.minisx.action.OPEN_WEBAPP" />
+                <action android:name="com.cuicsi.minisvps.action.OPEN_WEBAPP" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

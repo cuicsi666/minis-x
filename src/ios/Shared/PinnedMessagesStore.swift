@@ -113,7 +113,7 @@ final class PinnedMessagesStore: ObservableObject {
 
     /// Serial queue for disk writes (two saves can never interleave); `.utility`
     /// because a pin save is never urgent.
-    private let ioQueue = DispatchQueue(label: "com.cuicsi.minisx.pinned-messages.io",
+    private let ioQueue = DispatchQueue(label: "com.cuicsi.minisvps.pinned-messages.io",
                                         qos: .utility)
 
     init(fileURL: URL? = nil) {

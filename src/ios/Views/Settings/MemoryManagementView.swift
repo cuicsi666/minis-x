@@ -324,5 +324,5 @@ extension Notification.Name {
     /// locally — either by the user editing in MemoryManagementView, by
     /// memory_write tool, or by an inbound iCloud sync merge. Observers
     /// can use this to refresh their in-memory snapshot of memory files.
-    static let memoryFilesDidChange = Notification.Name("com.cuicsi.minisx.memoryFilesDidChange")
+    static let memoryFilesDidChange = Notification.Name("com.cuicsi.minisvps.memoryFilesDidChange")
 }
