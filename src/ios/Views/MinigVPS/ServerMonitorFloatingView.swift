@@ -33,54 +33,49 @@ struct ServerMonitorFloatingView: View {
 
     var body: some View {
         if enabled {
-            // NO full-screen Color.clear layer here — that could interfere
-            // with system modal presenters (file picker, share sheet).
-            // The card is positioned purely by layout (Spacers push it to the
-            // bottom-trailing corner) without any full-screen hit-test layer.
-            HStack {
-                Spacer(minLength: 0)
-                VStack {
-                    Spacer(minLength: 0)
-                    cardContent
-                        .padding(12)
-                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                                .strokeBorder(.white.opacity(0.12), lineWidth: 0.7)
-                        )
-                        .shadow(color: .black.opacity(0.18), radius: isDragging ? 8 : 14, y: 5)
-                        .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                        .offset(x: dragOffset.width, y: dragOffset.height)
-                        .gesture(
-                            DragGesture(minimumDistance: 4)
-                                .updating($isDragging) { _, state, _ in state = true }
-                                .onChanged { value in
-                                    let t = CGSize(width: savedOffset.width + value.translation.width,
-                                                   height: savedOffset.height + value.translation.height)
-                                    dragOffset = clamped(t)
+            // ZStack: the card is placed bottom-trailing. The full-area
+            // Color.clear exists ONLY to give the ZStack a size; it does NOT
+            // intercept touches (allowsHitTesting(false) on that one child
+            // only). The card itself is fully hit-testable & draggable.
+            ZStack(alignment: .bottomTrailing) {
+                Color.clear
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .allowsHitTesting(false)
+                    .ignoresSafeArea()
+
+                cardContent
+                    .padding(12)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 18, style: .continuous)
+                            .strokeBorder(.white.opacity(0.12), lineWidth: 0.7)
+                    )
+                    .shadow(color: .black.opacity(0.18), radius: isDragging ? 8 : 14, y: 5)
+                    .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    .offset(x: dragOffset.width, y: dragOffset.height)
+                    .gesture(
+                        DragGesture(minimumDistance: 2)
+                            .updating($isDragging) { _, state, _ in state = true }
+                            .onChanged { value in
+                                let t = CGSize(width: savedOffset.width + value.translation.width,
+                                               height: savedOffset.height + value.translation.height)
+                                dragOffset = clamped(t)
+                            }
+                            .onEnded { value in
+                                let final = clamped(CGSize(width: savedOffset.width + value.translation.width,
+                                                           height: savedOffset.height + value.translation.height))
+                                savedOffset = final
+                                dragOffset = final
+                            }
+                            .simultaneously(with: TapGesture().onEnded {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                    expanded.toggle()
                                 }
-                                .onEnded { value in
-                                    let final = clamped(CGSize(width: savedOffset.width + value.translation.width,
-                                                               height: savedOffset.height + value.translation.height))
-                                    savedOffset = final
-                                    dragOffset = final
-                                }
-                                .simultaneously(with: TapGesture().onEnded {
-                                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                                        expanded.toggle()
-                                    }
-                                })
-                        )
-                        .onChange(of: expanded) { newValue in
-                            monitor.setWantsFullDetail(newValue)
-                        }
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .allowsHitTesting(false)   // let touches pass through the empty HStack/VStack
-            .overlay(alignment: .bottomTrailing) {
-                // Re-attach hit testing ONLY to the card, nothing else.
-                // (The card is already the only interactive element.)
+                            })
+                    )
+                    .onChange(of: expanded) { newValue in
+                        monitor.setWantsFullDetail(newValue)
+                    }
             }
             .ignoresSafeArea(.keyboard)
             .onAppear { monitor.startMonitoring() }
@@ -90,6 +85,7 @@ struct ServerMonitorFloatingView: View {
             }
         }
     }
+
 
     // MARK: - Card content (collapsed / expanded)
     private var cardContent: some View {
