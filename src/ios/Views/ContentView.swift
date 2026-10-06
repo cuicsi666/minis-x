@@ -8263,7 +8263,7 @@ private enum SettingsDestination: Hashable {
 private struct SettingsSheet: View {
     @Binding var showTerminal: Bool
     @AppStorage("appearanceMode") private var appearanceMode: Int = 0
-    @AppStorage("minisVPSEnabled") private var minisVPSEnabled = true
+    @AppStorage("minisVPSEnabled") private var minisVPSEnabled = false
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var deepLink = DeepLinkCoordinator.shared
     @State private var navPath = NavigationPath()

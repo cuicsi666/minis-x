@@ -20,7 +20,7 @@ import SwiftUI
 struct ServerMonitorFloatingView: View {
     @ObservedObject private var monitor = ServerMonitor.shared
     /// Master switch (App Settings → not exposed directly; default ON).
-    @AppStorage("minisVPSEnabled") private var enabled: Bool = true
+    @AppStorage("minisVPSEnabled") private var enabled: Bool = false
 
     @State private var expanded = false
     @State private var showActions = false
