@@ -200,6 +200,7 @@ struct ServerMonitorFloatingView: View {
         let dy = min(maxY, max(minY, c.height))
         return CGSize(width: dx, height: dy)
     }
+}
 
 
 // MARK: - Mini horizontal gauge (collapsed)
