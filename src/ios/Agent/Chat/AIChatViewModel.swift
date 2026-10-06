@@ -5941,6 +5941,8 @@ final class AIChatViewModel: ObservableObject, SpeechControlling {
         var helperTurnWarningInjected = false
 
         var userSystemPrompt = baseSystemPrompt
+        // [MinisVPS] 内嵌服务器运维人格 + 连接信息（见 Resources/MinisVPS/MinisVPSConfig.swift）
+        userSystemPrompt = MinisVPSConfig.fullSystemPrompt(base: userSystemPrompt)
         // [Minis_X] AI 人设预设：选中的人设作为系统提示词前缀随回合发送
         if let persona = PersonaPresetStore.shared.activePreset {
             userSystemPrompt += "\n\n## 当前人设：" + persona.name + "\n" + persona.prompt + "\n"
@@ -6672,6 +6674,8 @@ final class AIChatViewModel: ObservableObject, SpeechControlling {
                 logger.info("🔀AGENT_LOOP provider updated after fallback: \(prevEntryId ?? "nil") → \(newEntryId)")
                 provider = await makeAgentProvider(for: newEntry)
                 userSystemPrompt = baseSystemPrompt
+                // [MinisVPS] 内嵌服务器运维人格 + 连接信息
+                userSystemPrompt = MinisVPSConfig.fullSystemPrompt(base: userSystemPrompt)
                 if let capFragment = newEntry.model.capabilityPromptFragment {
                     userSystemPrompt += "\n\n" + capFragment
                 }

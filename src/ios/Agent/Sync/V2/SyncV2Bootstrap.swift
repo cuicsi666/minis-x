@@ -42,6 +42,11 @@ enum SyncV2Bootstrap {
     /// Override via the `cloudSync.v2.enabled` UserDefaults key directly
     /// during development.
     static var isEnabled: Bool {
+        // [MinisVPS] iCloud 云同步总开关（默认关闭）。强行关掉 v2 引擎所有入口。
+        guard MinisVPSConfig.cloudSyncEnabled else {
+            logger.info("[SyncCore] v2 disabled by MinisVPSConfig.cloudSyncEnabled")
+            return false
+        }
         let key = "cloudSync.v2.enabled"
         if UserDefaults.standard.object(forKey: key) == nil {
             // Inherit from v1 if the user ever interacted with that

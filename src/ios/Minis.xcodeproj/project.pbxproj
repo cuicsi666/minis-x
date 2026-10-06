@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1EDC377C7AEB9151B1B4B024 /* MinisVPSConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C777894C73651C87A3B1B1 /* MinisVPSConfig.swift */; };
+		16F26D66C2A7D1EE0AE645B8 /* ServerMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F2E101F32A708B11F90171 /* ServerMonitor.swift */; };
+		EEEFB814EC5E0A80C97182CC /* ServerQuickActionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A137954B123790BA9648FFC2 /* ServerQuickActionsView.swift */; };
+		0F8653AB8C317F757ABB50B4 /* ServerMonitorFloatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA11617DE2ECB8F6054C6505 /* ServerMonitorFloatingView.swift */; };
 		D332F42BBD58AFF498967D54 /* CallModeInlineBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B443A17EBAF74B88DC48513 /* CallModeInlineBar.swift */; };
 		C9CB4EC53FAE23F7B4648972 /* PersonaPresetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9294230F36186F7C4173B00B /* PersonaPresetView.swift */; };
 		1FF3EB5BEE61BC3E8570249A /* TranslationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8671945C0D9C94DBC4BE3038 /* TranslationSheet.swift */; };
@@ -669,6 +673,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		83C777894C73651C87A3B1B1 /* MinisVPSConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MinisVPSConfig.swift"; sourceTree = "<group>"; };
+		A5F2E101F32A708B11F90171 /* ServerMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MinigVPS/ServerMonitor.swift"; sourceTree = "<group>"; };
+		A137954B123790BA9648FFC2 /* ServerQuickActionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MinigVPS/ServerQuickActionsView.swift"; sourceTree = "<group>"; };
+		FA11617DE2ECB8F6054C6505 /* ServerMonitorFloatingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MinigVPS/ServerMonitorFloatingView.swift"; sourceTree = "<group>"; };
 		4B443A17EBAF74B88DC48513 /* CallModeInlineBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/CallModeInlineBar.swift"; sourceTree = "<group>"; };
 		9294230F36186F7C4173B00B /* PersonaPresetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Settings/PersonaPresetView.swift"; sourceTree = "<group>"; };
 		8671945C0D9C94DBC4BE3038 /* TranslationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/TranslationSheet.swift"; sourceTree = "<group>"; };
@@ -1581,6 +1589,7 @@
 		E51000031 /* Minis */ = {
 			isa = PBXGroup;
 			children = (
+				B9A6C0FB1E2D634B407316DC /* MinisVPS */,
 				E51000011 /* MinisApp.swift */,
 				E5QA0102 /* AppDelegate.swift */,
 				E5E000018 /* Minis.entitlements */,
@@ -1611,6 +1620,15 @@
 			name = Minis;
 			sourceTree = "<group>";
 		};
+		B9A6C0FB1E2D634B407316DC /* MinisVPS */ = {
+			isa = PBXGroup;
+			children = (
+				83C777894C73651C87A3B1B1 /* MinisVPSConfig.swift */,
+			);
+			path = Resources/MinisVPS;
+			sourceTree = "<group>";
+		};
+
 		E51000032 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1878,6 +1896,9 @@
 		E5D000030 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				A5F2E101F32A708B11F90171 /* ServerMonitor.swift */,
+				A137954B123790BA9648FFC2 /* ServerQuickActionsView.swift */,
+				FA11617DE2ECB8F6054C6505 /* ServerMonitorFloatingView.swift */,
 				4B443A17EBAF74B88DC48513 /* CallModeInlineBar.swift */,
 				9294230F36186F7C4173B00B /* PersonaPresetView.swift */,
 				8671945C0D9C94DBC4BE3038 /* TranslationSheet.swift */,
@@ -2885,6 +2906,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1EDC377C7AEB9151B1B4B024 /* MinisVPSConfig.swift in Sources */,
+				16F26D66C2A7D1EE0AE645B8 /* ServerMonitor.swift in Sources */,
+				EEEFB814EC5E0A80C97182CC /* ServerQuickActionsView.swift in Sources */,
+				0F8653AB8C317F757ABB50B4 /* ServerMonitorFloatingView.swift in Sources */,
 				D332F42BBD58AFF498967D54 /* CallModeInlineBar.swift in Sources */,
 				C9CB4EC53FAE23F7B4648972 /* PersonaPresetView.swift in Sources */,
 				1FF3EB5BEE61BC3E8570249A /* TranslationSheet.swift in Sources */,
@@ -3760,7 +3785,7 @@
 					"-lfakefs",
 				);
 				OTHER_SWIFT_FLAGS = "";
-				INFOPLIST_KEY_CFBundleDisplayName = "Minis_X";
+				INFOPLIST_KEY_CFBundleDisplayName = "Minis_VPS";
 				PRODUCT_BUNDLE_IDENTIFIER = com.cuicsi.minisx;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -3815,7 +3840,7 @@
 					"-lfakefs",
 				);
 				OTHER_SWIFT_FLAGS = "";
-				INFOPLIST_KEY_CFBundleDisplayName = "Minis_X";
+				INFOPLIST_KEY_CFBundleDisplayName = "Minis_VPS";
 				PRODUCT_BUNDLE_IDENTIFIER = com.cuicsi.minisx;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

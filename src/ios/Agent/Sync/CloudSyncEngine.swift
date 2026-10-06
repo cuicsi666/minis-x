@@ -540,6 +540,11 @@ final class CloudSyncEngine: ObservableObject {
     }
 
     func start() async {
+        // [MinisVPS] iCloud 云同步总开关（默认关闭，保留本地 SQLite 单机可用）。
+        guard MinisVPSConfig.cloudSyncEnabled else {
+            syncStatus = .disabled
+            return
+        }
         guard isEnabled else {
             syncStatus = .disabled
             return

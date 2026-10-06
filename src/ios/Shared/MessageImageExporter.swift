@@ -50,7 +50,7 @@ enum MessageImageExporter {
                         .frame(width: 34, height: 34)
                         .overlay(Text("X").font(.system(size: 17, weight: .bold)).foregroundStyle(.white))
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(title?.isEmpty == false ? (title ?? "Minis_X") : "Minis_X")
+                        Text(title?.isEmpty == false ? (title ?? "Minis_VPS") : "Minis_VPS")
                             .font(.system(size: 17, weight: .semibold))
                             .foregroundStyle(.white)
                         Text(stamp)

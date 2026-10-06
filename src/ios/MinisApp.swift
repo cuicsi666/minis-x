@@ -203,6 +203,8 @@ struct MinisApp: App {
     @available(iOS 17.0, *)
     @MainActor
     private static func startSyncEngines() async {
+        // [MinisVPS] iCloud 云同步已禁用（cloudSyncEnabled=false），保持本地单机。
+        guard MinisVPSConfig.cloudSyncEnabled else { return }
         await SyncV2Bootstrap.startIfEnabled()
         if !SyncV2Bootstrap.shouldPauseV1() {
             await CloudSyncEngine.shared.start()
@@ -222,6 +224,11 @@ struct MinisApp: App {
                 // copy). It lays itself out full-screen (bottom-trailing capsule +
                 // tap-to-dismiss catcher), so no positioning wrapper here.
                 SpeechPlayerControl()
+                // MinisVPS: floating server monitor + quick actions, pinned to the
+                // bottom-trailing corner. Opaque to touches outside the card; its own
+                // GeometryReader places it and lets taps elsewhere pass through.
+                // Kept BELOW AppLockOverlay so it dims when the app is locked.
+                ServerMonitorFloatingView()
                 AppLockOverlay()
             }
                 .onReceive(SessionLockStore.shared.$appIsLocked) { locked in
@@ -647,6 +654,8 @@ struct MinisApp: App {
             // drain that competes with v2's send pipeline.
             if #available(iOS 17.0, *) {
                 Task { @MainActor in
+                    // [MinisVPS] 云同步禁用，前台唤醒也不再触发 fetch/send。
+                    guard MinisVPSConfig.cloudSyncEnabled else { return }
                     if SyncV2Bootstrap.shouldPauseV1() {
                         // [T-icloud-device-heartbeat] Re-announce this device on
                         // every foreground resume so peers see a fresh lastSeen.
