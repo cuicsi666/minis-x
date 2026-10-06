@@ -30,14 +30,12 @@ struct ServerMonitorFloatingView: View {
     @State private var savedOffset: CGSize = .zero
     @State private var dragOffset: CGSize = .zero
     @GestureState private var isDragging = false
+    // Prevents re-appearing views from snapping back to the corner.
+    @State private var hasPositioned = false
 
     var body: some View {
         if enabled {
-            ZStack(alignment: .bottomTrailing) {
-                Color.clear
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .allowsHitTesting(false)
-
+            GeometryReader { container in
                 VStack(spacing: 0) {
                     if expanded {
                         expandedContent
@@ -47,27 +45,44 @@ struct ServerMonitorFloatingView: View {
                             .transition(.opacity.combined(with: .scale(scale: 0.96, anchor: .bottomTrailing)))
                     }
                 }
-                .frame(maxWidth: 360)
+                .frame(maxWidth: container.size.width - 32)
                 .padding(12)
+                .allowsHitTesting(true)
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 18, style: .continuous)
                         .strokeBorder(.white.opacity(0.12), lineWidth: 0.7)
                 )
                 .shadow(color: .black.opacity(0.18), radius: isDragging ? 8 : 14, y: 5)
-                .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                .offset(x: dragOffset.width, y: dragOffset.height)
+                .position(x: container.size.width  - cardSize(container: container).width/2  - 12 + dragOffset.width,
+                          y: container.size.height - cardSize(container: container).height/2 - 12 + dragOffset.height)
+                .onAppear {
+                    // Only lock to the corner on the very first appearance;
+                    // keep a previously-dragged position across re-renders and
+                    // re-appears instead of snapping back to the corner.
+                    if !hasPositioned {
+                        lockToTrailingCorner(container: container)
+                        hasPositioned = true
+                    }
+                }
                 .gesture(
-                    DragGesture(minimumDistance: 4)
+                    DragGesture(minimumDistance: 8, coordinateSpace: .global)
                         .updating($isDragging) { _, state, _ in state = true }
                         .onChanged { value in
-                            let t = CGSize(width: savedOffset.width + value.translation.width,
-                                           height: savedOffset.height + value.translation.height)
-                            dragOffset = clamped(t)
+                            // Clamp while dragging so the card follows the
+                            // finger smoothly and never leaves the screen.
+                            dragOffset = clamped(
+                                CGSize(width: savedOffset.width  + value.translation.width,
+                                       height: savedOffset.height + value.translation.height),
+                                container: container)
                         }
                         .onEnded { value in
-                            let final = clamped(CGSize(width: savedOffset.width + value.translation.width,
-                                                       height: savedOffset.height + value.translation.height))
+                            // Save the clamped final position so the next drag
+                            // continues from here (never resets to the corner).
+                            let final = clamped(
+                                CGSize(width: savedOffset.width  + value.translation.width,
+                                       height: savedOffset.height + value.translation.height),
+                                container: container)
                             savedOffset = final
                             dragOffset = final
                         }
@@ -81,6 +96,7 @@ struct ServerMonitorFloatingView: View {
                     monitor.setWantsFullDetail(newValue)
                 }
             }
+            .allowsHitTesting(false)
             .ignoresSafeArea(.keyboard)
             .onAppear { monitor.startMonitoring() }
             .onDisappear { monitor.stopMonitoring() }
@@ -90,8 +106,10 @@ struct ServerMonitorFloatingView: View {
         }
     }
 
-
     // MARK: - Sizing
+    private var collapsedCardWidth: CGFloat { min(320, UIScreen.main.bounds.width - 40) }
+    private var collapsedCardHeight: CGFloat { 58 }
+
     // MARK: - Collapsed layout
     private var collapsedContent: some View {
         HStack(spacing: 12) {
@@ -179,28 +197,40 @@ struct ServerMonitorFloatingView: View {
 
     // MARK: - Drag helpers
     /// Current rendered card size (collapsed and expanded differ).
-    private func cardSize() -> CGSize {
-        let w = min(UIScreen.main.bounds.width - 16, expanded ? 350 : 320)
-        let h = expanded ? 360 : 58
+    private func cardSize(container: GeometryProxy) -> CGSize {
+        let w = expanded ? min(container.size.width - 32, 340) : collapsedCardWidth
+        let h = expanded ? 360 : collapsedCardHeight
         return CGSize(width: w, height: h)
     }
 
-    /// Clamp the drag offset so the card stays fully on-screen.
-    /// Offset (0,0) anchors the card at the bottom-trailing corner.
-    private func clamped(_ c: CGSize) -> CGSize {
-        let inset: CGFloat = 8
-        let size = cardSize()
-        let sw = UIScreen.main.bounds.width
-        let sh = UIScreen.main.bounds.height
-        let minX = -(sw - size.width - inset)
-        let maxX = 0.0
-        let minY = -(sh - size.height - inset)
-        let maxY = 0.0
-        let dx = min(maxX, max(minX, c.width))
-        let dy = min(maxY, max(minY, c.height))
-        return CGSize(width: dx, height: dy)
+    private func lockToTrailingCorner(container: GeometryProxy) {
+        // Start pinned to the trailing, bottom area (respecting trailing edge).
+        savedOffset = CGSize(width: 0, height: 0)
+        dragOffset = savedOffset
     }
 
+    /// Clamp the drag offset so the card stays fully on-screen.
+    ///
+    /// Offset (0,0) anchors the card at the bottom-trailing corner (12pt clear
+    /// of the right/bottom edges). The clamp keeps the card's whole bounds
+    /// visible while allowing it to move freely in any direction on screen.
+    private func clamped(_ c: CGSize, container: GeometryProxy) -> CGSize {
+        let inset: CGFloat = 12
+        let size = cardSize(container: container)
+        let anchorX = container.size.width  - size.width/2  - inset
+        let anchorY = container.size.height - size.height/2 - inset
+
+        // Allowed range for the card *center* (keeps the entire card visible).
+        let minCX = inset + size.width/2
+        let maxCX = container.size.width  - inset - size.width/2
+        let minCY = inset + size.height/2
+        let maxCY = container.size.height - inset - size.height/2
+
+        let dx = min(maxCX - anchorX, max(minCX - anchorX, c.width))
+        let dy = min(maxCY - anchorY, max(minCY - anchorY, c.height))
+        return CGSize(width: dx, height: dy)
+    }
+}
 
 // MARK: - Mini horizontal gauge (collapsed)
 private struct MiniGauge: View {
