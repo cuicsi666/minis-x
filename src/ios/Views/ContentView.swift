@@ -8576,18 +8576,11 @@ private struct SettingsSheet: View {
                     }
                 }
 
-                Section("服务器监控 (Minis_VPS)") {
-                    Toggle(isOn: $minisVPSEnabled) {
-                        Label {
-                            Text("悬浮监控窗")
-                        } icon: {
-                            Image(systemName: "server.rack")
-                                .font(.system(size: 9))
-                                .foregroundStyle(.white)
-                                .frame(width: 21, height: 21)
-                                .background(.green, in: Circle())
-                        }
-                    }
+                Section {
+                    Toggle("悬浮监控窗", isOn: $minisVPSEnabled)
+                        .tint(.green)
+                } header: {
+                    Text("服务器监控 (Minis_VPS)")
                 } footer: {
                     Text("在聊天/主界面右下角显示服务器 CPU · 内存 · 磁盘 · 负载 实时悬浮监控窗（每秒刷新，可拖动）。")
                 }
