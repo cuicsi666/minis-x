@@ -282,12 +282,8 @@ struct AttachmentFilePickerView: View {
     // MARK: - Navigation & loading
 
     private func navigate(quick url: URL) {
-        // Recompute breadcrumbs up to the root.
-        let rootRelative = url.path.hasPrefix(rootURL.path)
-            ? String(url.path.dropFirst(rootURL.path.count))
-            : url.path
-        let parts = rootRelative.split(separator: "/").map(String.init)
-        breadcrumbs = parts
+        // Recompute breadcrumbs up to the root as the URL for each level.
+        breadcrumbs = breadcrumbURLs(for: url)
         currentDirectory = url
         selection.removeAll()
         loadCurrentDirectory()
@@ -295,19 +291,27 @@ struct AttachmentFilePickerView: View {
 
     private func navigateTo(url: URL) {
         // Normalize under root support.
-        if url == rootURL {
-            breadcrumbs = []
-        } else if url.path.hasPrefix(rootURL.path) {
-            let rel = String(url.path.dropFirst(rootURL.path.count))
-            let parts = rel.split(separator: "/").map(String.init)
-            breadcrumbs = parts
-        } else {
-            breadcrumbs = [url.lastPathComponent]
-        }
+        breadcrumbs = breadcrumbURLs(for: url)
         currentDirectory = url
         selection.removeAll()
         loadCurrentDirectory()
     }
+
+    /// Build the breadcrumb URLs (each ancestor, root first) for a directory.
+    private func breadcrumbURLs(for url: URL) -> [URL] {
+        var result: [URL] = []
+        if url == rootURL { return [] }
+        let root = rootURL.path
+        guard url.path.hasPrefix(root) else { return [url] }
+        let rel = String(url.path.dropFirst(root.count))
+        var cursor = rootURL
+        for comp in rel.split(separator: "/") {
+            cursor = cursor.appendingPathComponent(String(comp))
+            result.append(cursor)
+        }
+        return result
+    }
+
 
     private func loadCurrentDirectory() {
         let fm = FileManager.default
