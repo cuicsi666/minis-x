@@ -355,6 +355,7 @@ struct AIChatView: View {
     @State private var showCamera = false
     @State private var showPhotoPicker = false
     @State private var showDocumentPicker = false
+    @State private var showAttachmentFilePicker = false
     @State private var showMoveToSheet = false
     @State private var showClearChatConfirm = false
     /// [T-new-chat-menu-entry] Confirmation gate for "New Chat" from the "…"
@@ -490,7 +491,7 @@ struct AIChatView: View {
     /// True when any sheet or fullScreenCover is presented (suppress auto-focus to avoid keyboard bugs).
     private var hasOverlayPresented: Bool {
         showFileBrowser || showBrowserSheet || showTerminal || showCamera
-            || showPhotoPicker || showDocumentPicker || showModelPicker
+            || showPhotoPicker || showDocumentPicker || showModelPicker || showAttachmentFilePicker
     }
 
     /// Tracks whether this ChatView is the currently visible screen.
@@ -1106,6 +1107,16 @@ struct AIChatView: View {
                 let base = RootfsManager.shared.dataPath
                 FileBrowserView(rootPath: base, initialPath: base.appendingPathComponent("var/minis"), rootLabel: "/")
             }
+        }
+        // [T-sideload-attach-picker] Attachment selection via the in-app sandbox
+        // browser (iSH rootfs / var/minis) instead of the system document
+        // picker — on sideloaded installs security-scoped access is broken.
+        .sheet(isPresented: $showAttachmentFilePicker) {
+            AttachmentFilePickerView(onSelect: { urls in
+                for url in urls {
+                    vm.addFileAttachment(from: url)
+                }
+            })
         }
         .sheet(isPresented: $showBrowserSheet) {
             BrowserSheetView(pool: vm.browserTabPool, isAgentBusy: vm.browserTabPool.isAgentBrowsing, onTakeover: {
@@ -3386,6 +3397,7 @@ struct AIChatView: View {
                 Button { showCamera = true } label: { Label("Take Photo", systemImage: "camera") }
                 Button { showPhotoPicker = true } label: { Label("Choose Photos & Videos", systemImage: "photo.on.rectangle") }
                 Button { showDocumentPicker = true } label: { Label("Add File", systemImage: "doc") }
+                Button { showAttachmentFilePicker = true } label: { Label("Browse from Files", systemImage: "folder") }
             } label: {
                 icon
             }
@@ -3397,6 +3409,7 @@ struct AIChatView: View {
                 Button { showCamera = true } label: { Label("Take Photo", systemImage: "camera") }
                 Button { showPhotoPicker = true } label: { Label("Choose Photos & Videos", systemImage: "photo.on.rectangle") }
                 Button { showDocumentPicker = true } label: { Label("Add File", systemImage: "doc") }
+                Button { showAttachmentFilePicker = true } label: { Label("Browse from Files", systemImage: "folder") }
             }
         }
     }

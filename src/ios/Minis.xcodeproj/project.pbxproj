@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6B98CE5ABFBD4C2FAF6D05DE /* AttachmentFilePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4F2A161008C6285F9ABDB6 /* AttachmentFilePickerView.swift */; };
 		1EDC377C7AEB9151B1B4B024 /* MinisVPSConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C777894C73651C87A3B1B1 /* MinisVPSConfig.swift */; };
 		16F26D66C2A7D1EE0AE645B8 /* ServerMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F2E101F32A708B11F90171 /* ServerMonitor.swift */; };
 		EEEFB814EC5E0A80C97182CC /* ServerQuickActionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A137954B123790BA9648FFC2 /* ServerQuickActionsView.swift */; };
@@ -673,6 +674,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		DD4F2A161008C6285F9ABDB6 /* AttachmentFilePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat/AttachmentFilePickerView.swift"; sourceTree = "<group>"; };
 		83C777894C73651C87A3B1B1 /* MinisVPSConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MinisVPSConfig.swift"; sourceTree = "<group>"; };
 		A5F2E101F32A708B11F90171 /* ServerMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MinigVPS/ServerMonitor.swift"; sourceTree = "<group>"; };
 		A137954B123790BA9648FFC2 /* ServerQuickActionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MinigVPS/ServerQuickActionsView.swift"; sourceTree = "<group>"; };
@@ -1896,6 +1898,7 @@
 		E5D000030 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				DD4F2A161008C6285F9ABDB6 /* AttachmentFilePickerView.swift */,
 				A5F2E101F32A708B11F90171 /* ServerMonitor.swift */,
 				A137954B123790BA9648FFC2 /* ServerQuickActionsView.swift */,
 				FA11617DE2ECB8F6054C6505 /* ServerMonitorFloatingView.swift */,
@@ -2906,6 +2909,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B98CE5ABFBD4C2FAF6D05DE /* AttachmentFilePickerView.swift in Sources */,
 				1EDC377C7AEB9151B1B4B024 /* MinisVPSConfig.swift in Sources */,
 				16F26D66C2A7D1EE0AE645B8 /* ServerMonitor.swift in Sources */,
 				EEEFB814EC5E0A80C97182CC /* ServerQuickActionsView.swift in Sources */,
