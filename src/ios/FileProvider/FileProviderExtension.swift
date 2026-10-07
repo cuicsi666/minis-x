@@ -11,12 +11,12 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
 
     private static let log = OSLog(subsystem: "com.cuicsi.minisvps.FileProvider", category: "Extension")
 
-    /// Root directory for all FileProvider-visible files in the App Group container.
+    /// Root directory for all FileProvider-visible files in this process's
+    /// local Application Support directory (App Group container is gone).
     static var providerRoot: URL {
-        let container = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: "group.com.cuicsi.minisvps"
-        )!
-        let url = container.appendingPathComponent("MinisFileProvider", isDirectory: true)
+        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
+        let url = base.appendingPathComponent("MinisFileProvider", isDirectory: true)
         try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         return url
     }
@@ -99,12 +99,13 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
         }
 
         // Location 2: under MinisConfig (private but still pure cruft).
-        if let container = fm.containerURL(forSecurityApplicationGroupIdentifier: "group.com.cuicsi.minisvps") {
-            let inConfig = container.appendingPathComponent("MinisConfig/logs", isDirectory: true)
+        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
+        let container = base
+        let inConfig = container.appendingPathComponent("MinisConfig/logs", isDirectory: true)
             if fm.fileExists(atPath: inConfig.path, isDirectory: &isDir), isDir.boolValue {
                 try? fm.removeItem(at: inConfig)
             }
-        }
     }
 
     /// Delete a residual `mounted-folders.json` file that the main app
@@ -118,7 +119,8 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
         guard fm.fileExists(atPath: legacy.path) else { return }
         // Only delete if the canonical copy already exists under MinisConfig —
         // otherwise we'd lose the data.
-        guard let container = fm.containerURL(forSecurityApplicationGroupIdentifier: "group.com.cuicsi.minisvps") else { return }
+        let container = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
         let canonical = container.appendingPathComponent("MinisConfig/mounted-folders.json")
         if fm.fileExists(atPath: canonical.path) {
             try? fm.removeItem(at: legacy)

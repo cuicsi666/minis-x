@@ -61,7 +61,6 @@ enum FileProviderBootHealth {
     /// costs nothing, while a genuine loop is caught within three app launches.
     static let tripThreshold = 3
 
-    private static let appGroupId = "group.com.cuicsi.minisvps"
     private static let fileName = "fp-boot-health.plist"
 
     private struct State: Codable {
@@ -76,10 +75,9 @@ enum FileProviderBootHealth {
     }
 
     private static var fileURL: URL? {
-        guard let container = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: appGroupId
-        ) else { return nil }
-        let dir = container.appendingPathComponent("MinisConfig", isDirectory: true)
+        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
+        let dir = base.appendingPathComponent("MinisConfig", isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         return dir.appendingPathComponent(fileName)
     }

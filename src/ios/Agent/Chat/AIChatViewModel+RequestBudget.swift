@@ -281,21 +281,15 @@ extension AIChatViewModel {
         return url
     }
 
-    /// [Minis_X 侧载修复] App Group 容器根路径。
+    /// [去 App Group] 本地持久化根路径。
     ///
-    /// 侧载签名（AltStore / 全能签）不会为 App 配置 App Group，此时
-    /// `containerURL(forSecurityApplicationGroupIdentifier:)` 返回 nil。
-    /// 原实现对该返回值**强解**（`!`），侧载环境一启动就崩。这里回退到沙箱自身的
-    /// Application Support：功能完整，仅 FileProvider 跨进程共享目录退化为 App
-    /// 私有目录（侧载下 FileProvider 扩展本就不可用）。
+    /// 原来这里是 App Group 共享容器根；现在 App Group entitlement 已移除，
+    /// `containerURL(forSecurityApplicationGroupIdentifier:)` 会返回 nil。
+    /// 统一改走本进程私有 Application Support 目录（`AppDirs.appSupport`），
+    /// 功能完整且完全持久化；仅 FileProvider 跨进程共享目录退化为 App 私有
+    /// 目录（去 App Group 后跨进程共享本就不可用）。
     nonisolated static var minisSharedContainerBase: URL {
-        if let container = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: SharedContainerStore.appGroupID
-        ) {
-            return container
-        }
-        return FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
-            ?? FileManager.default.temporaryDirectory
+        AppDirs.appSupport
     }
 
     /// Persistent storage directory for memory (shared across all sessions).

@@ -1842,14 +1842,13 @@ final class DebugJSONRPC: @unchecked Sendable {
             let relative = String(stripped.dropFirst("Documents/".count))
             return relative.isEmpty ? docs : docs.appendingPathComponent(relative)
         }
-        // Support AppGroup/ prefix to access the shared App Group container,
-        // where the FileProvider extension writes its diagnostic log.
+        // Support AppGroup/ prefix: historically mapped to the shared App
+        // Group container. Now maps to the app's local Application Support
+        // root (AppDirs.appSupport), where the FP diagnostic log is written.
         if stripped.hasPrefix("AppGroup/") {
-            let fm = FileManager.default
-            if let container = fm.containerURL(forSecurityApplicationGroupIdentifier: "group.com.cuicsi.minisvps") {
-                let relative = String(stripped.dropFirst("AppGroup/".count))
-                return relative.isEmpty ? container : container.appendingPathComponent(relative)
-            }
+            let container = AppDirs.appSupport
+            let relative = String(stripped.dropFirst("AppGroup/".count))
+            return relative.isEmpty ? container : container.appendingPathComponent(relative)
         }
         return RootfsManager.shared.dataPath.appendingPathComponent(stripped)
     }

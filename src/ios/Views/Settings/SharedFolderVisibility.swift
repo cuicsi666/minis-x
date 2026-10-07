@@ -6,8 +6,10 @@
 //  (shared / skills / memory) should appear in the iOS Files app.
 //  Both the main app process and the FileProvider extension read this.
 //
-//  Backing store: App Group UserDefaults (`group.com.cuicsi.minisvps`) so
-//  the FileProvider extension sees the same state as the main app.
+//  Backing store: process-local UserDefaults (`.standard`). The App Group
+//  suite was removed together with the App Group entitlement, so the main
+//  app and the extension no longer share the same backing store (each keeps
+//  its own copy — acceptable degradation; visibility still defaults on).
 //
 //  Semantics:
 //    - Default = visible (all three are exposed on first launch).
@@ -23,13 +25,11 @@ enum SharedFolderVisibility {
     /// Must match FileProviderExtension.topLevelSubdirs.
     static let allFolderNames: [String] = ["shared", "skills", "memory"]
 
-    private static let appGroupID = "group.com.cuicsi.minisvps"
     private static let userDefaultsKeyPrefix = "fileProviderVisible."
 
     private static var store: UserDefaults {
-        // Prefer the App Group suite so the FileProvider extension sees the
-        // same values; fall back to standard if unavailable.
-        UserDefaults(suiteName: appGroupID) ?? .standard
+        // App Group suite is gone; use the process-local standard store.
+        .standard
     }
 
     /// Whether the given folder name (e.g. "shared") is currently visible in Files.

@@ -786,9 +786,7 @@ struct MinisApp: App {
         guard previous != current else { return }
         UserDefaults.standard.set(current, forKey: key)
 
-        guard let container = fm.containerURL(forSecurityApplicationGroupIdentifier: "group.com.cuicsi.minisvps") else { return }
-        let dir = container.appendingPathComponent("MinisConfig", isDirectory: true)
-        try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
+        let dir = AppDirs.configRoot
         let url = dir.appendingPathComponent("fp-sync-trace.log")
         let fmt = DateFormatter()
         fmt.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
@@ -1173,10 +1171,7 @@ struct MinisApp: App {
     private static func migrateSharedDirToAppGroup() {
         let fm = FileManager.default
         let library = fm.urls(for: .libraryDirectory, in: .userDomainMask).first!
-        // [Minis_X 侧载修复] 无 App Group 时跳过本次迁移（强解会崩）
-        guard let container = fm.containerURL(forSecurityApplicationGroupIdentifier: "group.com.cuicsi.minisvps") else {
-            return
-        }
+        let container = AppDirs.appSupport
 
         let migrations: [(source: URL, dest: URL, label: String)] = [
             // Legacy Library/MinisChat/shared → new shared
@@ -1217,11 +1212,10 @@ struct MinisApp: App {
     /// targets logged during MOUNT setup.
     private static func logFPSyncTracePaths() {
         let fm = FileManager.default
-        let groupID = "group.com.cuicsi.minisvps"
-        let containerURL = fm.containerURL(forSecurityApplicationGroupIdentifier: groupID)
-        let containerPath = containerURL?.path ?? "<nil>"
-        let resolvedContainer = containerURL?.resolvingSymlinksInPath().path ?? "<nil>"
-        lifecycleLog.info("[FPSyncTrace] appGroup=\(groupID) container=\(containerPath) resolved=\(resolvedContainer)")
+        let containerURL = AppDirs.appSupport
+        let containerPath = containerURL.path
+        let resolvedContainer = containerURL.resolvingSymlinksInPath().path
+        lifecycleLog.info("[FPSyncTrace] container=\(containerPath) resolved=\(resolvedContainer)")
 
         let providerRoot = AIChatViewModel.minisAppGroupRoot
         lifecycleLog.info("[FPSyncTrace] providerRoot=\(providerRoot.path) resolved=\(providerRoot.resolvingSymlinksInPath().path)")

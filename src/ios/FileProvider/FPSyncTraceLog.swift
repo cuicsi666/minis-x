@@ -21,10 +21,9 @@ enum FPSyncTraceLog {
     private static let osLog = OSLog(subsystem: "com.cuicsi.minisvps.FileProvider", category: "FPSyncTrace")
 
     private static var fileURL: URL? {
-        guard let container = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: "group.com.cuicsi.minisvps"
-        ) else { return nil }
-        let dir = container.appendingPathComponent("MinisConfig", isDirectory: true)
+        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
+        let dir = base.appendingPathComponent("MinisConfig", isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         return dir.appendingPathComponent(logFileName)
     }
